@@ -1,0 +1,2496 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kestrel — Calm Editorial Store | Home Goods, Audio &amp; Apparel</title>
+  <meta name="description" content="Curated objects for living, listening, and quiet ritual. Crafted in small runs from natural materials and precision acoustic engineering.">
+
+  <!-- Google Fonts: Red Hat Display (Headings), Commissioner (Body), Source Code Pro (Codes & Prices) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@300;400;500;600&family=Red+Hat+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Material Symbols Outlined -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <!-- Lenis CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.18/dist/lenis.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#FAF9F9',
+              dark: '#072427',
+              accent: '#B85D43',
+              accentHover: '#9E4E37',
+              border: '#D8D6CE',
+              surface: '#F4F2EE',
+              surfaceAlt: '#EAE7E1',
+              muted: '#526668',
+            }
+          },
+          fontFamily: {
+            heading: ['"Red Hat Display"', 'sans-serif'],
+            body: ['"Commissioner"', 'sans-serif'],
+            mono: ['"Source Code Pro"', 'monospace'],
+          },
+          borderRadius: {
+            DEFAULT: '8px',
+            xs: '4px',
+            sm: '6px',
+            md: '8px',
+            lg: '8px',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* =========================================================================
+       CRITICAL CSS RESETS & NO OVERFLOW-HIDDEN ANCESTORS
+       Use overflow-x: clip so position: sticky works without breaking.
+       ========================================================================= */
+    html {
+      background-color: #FAF9F9;
+      color: #072427;
+      font-family: 'Commissioner', sans-serif;
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background-color: transparent !important;
+      overflow-x: clip;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Water Background Canvas: Strictly behind all cards & content */
+    #water-ripple-canvas {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      pointer-events: none !important;
+      z-index: -1 !important;
+    }
+
+    /* Stacked Cards Baseline Rules:
+       - position: sticky
+       - transform-origin: 50% 0
+       - opaque background
+       - margin-bottom: 6vh;
+       - backface-visibility: hidden & will-change: transform to prevent hairline seams */
+    .stacked-perspective-card {
+      position: -webkit-sticky !important;
+      position: sticky !important;
+      transform-origin: 50% 0 !important;
+      background-color: #FAF9F9 !important;
+      border-radius: 8px !important;
+      margin-bottom: 6vh !important;
+      box-shadow: 0 -6px 28px rgba(7, 36, 39, 0.06), 0 12px 36px rgba(7, 36, 39, 0.04) !important;
+      backface-visibility: hidden !important;
+      will-change: transform !important;
+      transform-style: preserve-3d !important;
+      min-height: 480px !important;
+    }
+
+    /* Card Protection on Products Grid & Cart Items */
+    .product-card-wrap,
+    .product-card-inner {
+      position: relative !important;
+      z-index: 10 !important;
+      isolation: isolate !important;
+    }
+
+    /* Lenis Standard CSS */
+    html.lenis, html.lenis body {
+      height: auto;
+    }
+    .lenis.lenis-smooth {
+      scroll-behavior: auto !important;
+    }
+    .lenis.lenis-smooth [data-lenis-prevent] {
+      overscroll-behavior: contain;
+    }
+    .lenis.lenis-stopped {
+      overflow: hidden;
+    }
+
+    /* Accessibility Focus States */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid #B85D43;
+      outline-offset: 3px;
+    }
+
+    /* Bag Count Badge Bump Animation */
+    @keyframes bagBump {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.35); }
+      100% { transform: scale(1); }
+    }
+    .bag-bump {
+      animation: bagBump 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Custom Editorial Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF9F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D8D6CE;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #B85D43;
+    }
+
+    /* Reduced Motion Fallback */
+    @media (prefers-reduced-motion: reduce) {
+      .stacked-perspective-card {
+        position: relative !important;
+        top: auto !important;
+        transform: none !important;
+        margin-bottom: 2rem !important;
+        box-shadow: 0 2px 12px rgba(7, 36, 39, 0.05) !important;
+      }
+      .card-shade-overlay {
+        display: none !important;
+      }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+
+  <!-- GSAP & Lenis CDNs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+</head>
+<body class="selection:bg-brand-accent selection:text-white">
+
+  <!-- ========================================================================= -->
+  <!-- WATER RIPPLE CANVAS (Strictly behind cards & content at z-index: -1) -->
+  <!-- ========================================================================= -->
+  <canvas 
+    id="water-ripple-canvas" 
+    class="fixed inset-0 w-full h-full pointer-events-none" 
+    style="position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1;" 
+    aria-hidden="true"
+  ></canvas>
+
+  <!-- ========================================================================= -->
+  <!-- 00. THIN ACCENT PROGRESS BAR (Fixed Top) -->
+  <!-- ========================================================================= -->
+  <div 
+    id="scroll-progress-bar" 
+    class="fixed top-0 left-0 h-[2.5px] bg-brand-accent z-50 origin-left scale-x-0 w-full pointer-events-none transition-transform duration-75"
+    aria-hidden="true"
+  ></div>
+
+  <!-- ========================================================================= -->
+  <!-- FIXED VERTICAL SIDE COUNTER (Left Rail for Perspectives, Hidden on Mobile) -->
+  <!-- ========================================================================= -->
+  <aside 
+    id="fixed-side-counter" 
+    class="fixed left-6 top-1/2 -translate-y-1/2 z-30 hidden lg:flex flex-col items-center gap-4 select-none pointer-events-none opacity-0 transition-opacity duration-300"
+    aria-hidden="true"
+  >
+    <div class="font-mono text-[11px] font-semibold tracking-[0.25em] text-brand-accent uppercase [writing-mode:vertical-rl] rotate-180">
+      <span id="counter-label">PERSPECTIVE 01</span>
+    </div>
+    <div class="h-20 w-[1.5px] bg-brand-border/80 relative overflow-hidden">
+      <div 
+        id="counter-progress-fill" 
+        class="h-full w-full bg-brand-accent origin-top scale-y-[0.33] transition-transform duration-300"
+      ></div>
+    </div>
+    <div class="font-mono text-xs font-semibold text-brand-dark tracking-wider">
+      <span id="counter-current">01</span><span class="text-brand-dark/40 font-normal"> / 03</span>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- 01. STICKY NAVBAR -->
+  <!-- ========================================================================= -->
+  <header 
+    id="main-nav" 
+    class="sticky top-0 z-40 w-full bg-[#FAF9F9]/90 backdrop-blur-md border-b border-brand-border transition-colors duration-200"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3.5 flex items-center justify-between">
+      <!-- Left: Brand Logo -->
+      <a href="#hero" class="flex items-baseline gap-2.5 group">
+        <span class="font-heading font-bold text-2xl tracking-tighter text-brand-dark group-hover:text-brand-accent transition-colors">
+          KESTREL
+        </span>
+        <span class="font-mono text-[10px] text-brand-muted tracking-widest uppercase hidden sm:inline">
+          // Studio
+        </span>
+      </a>
+
+      <!-- Middle: Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-xs font-mono tracking-wider uppercase" aria-label="Main Navigation">
+        <a href="#featured-products" class="nav-link text-brand-dark/75 hover:text-brand-accent transition-colors relative py-1">
+          Collection
+        </a>
+        <a href="#craft-story" class="nav-link text-brand-dark/75 hover:text-brand-accent transition-colors relative py-1">
+          Craft &amp; Perspectives
+        </a>
+        <a href="#editorial-notes" class="nav-link text-brand-dark/75 hover:text-brand-accent transition-colors relative py-1">
+          Editorial Notes
+        </a>
+      </nav>
+
+      <!-- Right: Action Icons (Search, Bag) -->
+      <div class="flex items-center gap-3">
+        <!-- Search Trigger Button -->
+        <button 
+          id="search-toggle-btn" 
+          type="button" 
+          class="p-2 text-brand-dark/80 hover:text-brand-accent hover:bg-brand-surface rounded-xs transition-colors flex items-center justify-center"
+          aria-label="Open search overlay"
+        >
+          <span class="material-symbols-outlined text-22">search</span>
+        </button>
+
+        <!-- Cart Bag Trigger Button -->
+        <button 
+          id="cart-toggle-btn" 
+          type="button" 
+          class="group relative flex items-center gap-2 py-2 px-3.5 bg-brand-surface hover:bg-brand-dark text-brand-dark hover:text-white border border-brand-border rounded-xs transition-all duration-200"
+          aria-label="View shopping satchel"
+        >
+          <span class="material-symbols-outlined text-18 text-brand-accent group-hover:text-white transition-colors">shopping_bag</span>
+          <span class="font-mono text-xs uppercase tracking-wider font-medium hidden sm:inline">Satchel</span>
+          <span 
+            id="cart-count-badge" 
+            class="min-w-[18px] h-[18px] px-1 bg-brand-accent text-white font-mono text-[10px] font-semibold rounded-full flex items-center justify-center transition-transform"
+          >0</span>
+        </button>
+
+        <!-- Mobile Menu Toggle -->
+        <button 
+          id="mobile-menu-btn" 
+          type="button" 
+          class="md:hidden p-2 text-brand-dark hover:text-brand-accent"
+          aria-label="Toggle mobile menu"
+          aria-expanded="false"
+        >
+          <span class="material-symbols-outlined text-24">menu</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Nav Dropdown -->
+    <div id="mobile-nav-menu" class="hidden md:hidden border-t border-brand-border bg-brand-bg px-6 py-4 space-y-3 font-mono text-xs uppercase tracking-wider">
+      <a href="#featured-products" class="mobile-nav-link block py-1.5 text-brand-dark hover:text-brand-accent">
+        Collection
+      </a>
+      <a href="#craft-story" class="mobile-nav-link block py-1.5 text-brand-dark hover:text-brand-accent">
+        Craft &amp; Perspectives
+      </a>
+      <a href="#editorial-notes" class="mobile-nav-link block py-1.5 text-brand-dark hover:text-brand-accent">
+        Editorial Notes
+      </a>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 02. HERO SECTION -->
+  <!-- ========================================================================= -->
+  <section 
+    id="hero" 
+    class="relative min-h-[85vh] sm:min-h-[90vh] flex items-center pt-16 pb-12 overflow-hidden"
+    aria-label="Editorial Introduction"
+  >
+    <!-- Background Image with Parallax & Scrim Gradient -->
+    <div class="absolute inset-0 w-full h-[125%] -top-[12%] overflow-hidden pointer-events-none z-0">
+      <img 
+        id="hero-bg-img" 
+        src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=2200&q=85" 
+        alt="Calm minimal interior bathed in natural warm sunlight with sculptural objects" 
+        class="w-full h-full object-cover object-center will-change-transform scale-105 opacity-90"
+      />
+    </div>
+
+    <!-- Directional Scrim: Text remains crisp while photography preserves warmth -->
+    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/85 via-brand-dark/35 to-transparent pointer-events-none z-0"></div>
+
+    <!-- Hero Content Container -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <div class="max-w-3xl">
+        
+        <!-- Meta Label -->
+        <div class="overflow-hidden mb-3.5">
+          <div class="hero-line flex items-center gap-3">
+            <span class="inline-block w-6 h-[1.5px] bg-brand-accent"></span>
+            <span class="font-mono text-xs uppercase tracking-[0.25em] text-[#FAF9F9]/85 font-medium">
+              Issue No. 04 / Acoustic &amp; Tactile Living
+            </span>
+          </div>
+        </div>
+
+        <!-- Headline split into masked rising lines -->
+        <div class="space-y-1 mb-5">
+          <div class="overflow-hidden">
+            <h1 class="hero-line font-heading font-medium text-4xl sm:text-6xl lg:text-7xl tracking-tight text-[#FAF9F9] leading-[1.08]">
+              Thoughtful forms.
+            </h1>
+          </div>
+          <div class="overflow-hidden">
+            <h2 class="hero-line font-heading font-light text-4xl sm:text-6xl lg:text-7xl tracking-tight text-[#FAF9F9]/90 leading-[1.08] italic">
+              Enduring tactile calm.
+            </h2>
+          </div>
+        </div>
+
+        <!-- Short Paragraph -->
+        <div class="hero-fade-in opacity-0 translate-y-4 mb-7 max-w-xl">
+          <p class="font-body text-base sm:text-lg text-[#FAF9F9]/80 font-light leading-relaxed">
+            Curated objects for living, listening, and quiet ritual. Crafted in small artisan runs from unvarnished natural timber, hand-thrown clay, and precision acoustic engineering.
+          </p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="hero-fade-in opacity-0 translate-y-4 flex flex-wrap items-center gap-4">
+          <button 
+            id="hero-explore-btn" 
+            type="button" 
+            class="group bg-brand-accent hover:bg-brand-accentHover text-white px-6 sm:px-7 py-3 sm:py-3.5 rounded-xs font-body text-xs font-medium tracking-[0.15em] uppercase transition-all duration-300 shadow-sm flex items-center gap-3"
+          >
+            <span>Explore Collection</span>
+            <span class="material-symbols-outlined text-18 group-hover:translate-y-0.5 transition-transform duration-200">arrow_downward</span>
+          </button>
+
+          <a 
+            href="#craft-story" 
+            class="group border border-[#FAF9F9]/30 hover:border-[#FAF9F9] hover:bg-[#FAF9F9]/10 text-[#FAF9F9] px-6 sm:px-7 py-3 sm:py-3.5 rounded-xs font-body text-xs font-medium tracking-[0.15em] uppercase transition-all duration-300 backdrop-blur-sm flex items-center gap-2"
+          >
+            <span>Read Perspectives</span>
+            <span class="material-symbols-outlined text-18 group-hover:translate-x-1 transition-transform duration-200">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 03. FEATURED PRODUCTS COLLECTION -->
+  <!-- ========================================================================= -->
+  <section id="featured-products" class="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-brand-border">
+    
+    <!-- Section Header & Filter Chips -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-12">
+      <div>
+        <div class="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-brand-accent mb-2">
+          <span>[ CATALOGUE // 01 ]</span>
+          <span>—</span>
+          <span>CURATED SERIES</span>
+        </div>
+        <h2 class="font-heading font-medium text-3xl sm:text-4xl text-brand-dark tracking-tight">
+          Objects for quiet ritual.
+        </h2>
+      </div>
+
+      <!-- Filter Chips with Dynamic Item Counts -->
+      <div id="filter-chips-wrapper" class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter products by category">
+        <!-- Rendered dynamically via JavaScript -->
+      </div>
+    </div>
+
+    <!-- Products Grid (Rendered dynamically from PRODUCTS_DATA array) -->
+    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 transition-opacity duration-200">
+      <!-- Injected via JavaScript -->
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 04. CRAFT & PERSPECTIVES SECTION (3 STACKED EDITORIAL CARDS) -->
+  <!-- Stacking: siblings in ONE parent (<main id="stack">), margin-bottom: 6vh -->
+  <!-- ========================================================================= -->
+  <section id="craft-story" class="py-16 sm:py-20 bg-brand-surface/20 relative border-t border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Intro: Tightened margin to prevent excess white space -->
+      <div class="max-w-2xl mb-8 sm:mb-10">
+        <div class="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-brand-accent mb-2">
+          <span>[ PERSPECTIVES ]</span>
+          <span>—</span>
+          <span>PROCESS &amp; DISCIPLINE</span>
+        </div>
+        <h2 class="font-heading font-medium text-3xl sm:text-5xl tracking-tight text-brand-dark leading-tight">
+          Made slowly, to live indefinitely.
+        </h2>
+        <p class="font-body text-base sm:text-lg text-brand-muted mt-3 font-light leading-relaxed">
+          In an era of disposable manufacturing, we build objects designed to absorb history. Three deliberate chapters from our collaborative workshops.
+        </p>
+      </div>
+
+      <!-- ONE PARENT CONTAINER: <main id="stack"> (All cards are direct siblings inside this) -->
+      <!-- padding-bottom: 12vh gives runway without bottom blank gap -->
+      <main id="stack" class="relative" style="padding-bottom: 12vh;">
+        <!-- Rendered dynamically from ONE JavaScript array using ONE card template in DOM order 01, 02, 03 -->
+      </main>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 05. EDITORIAL MANIFESTO CALLOUT -->
+  <!-- ========================================================================= -->
+  <section id="editorial-notes" class="py-14 sm:py-16 bg-transparent border-t border-brand-border">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <span class="font-mono text-xs uppercase tracking-[0.25em] text-brand-accent block mb-4">
+        [ FIELD NOTE // 084 ]
+      </span>
+      <blockquote class="font-heading text-2xl sm:text-4xl font-light text-brand-dark leading-tight tracking-tight mb-6">
+        “A home should not be an inventory of transient noise, but a sanctuary of quiet, resonant companions.”
+      </blockquote>
+      <div class="flex items-center justify-center gap-3">
+        <span class="w-8 h-[1px] bg-brand-dark/30"></span>
+        <cite class="font-body not-italic text-xs sm:text-sm text-brand-muted uppercase tracking-widest font-medium">
+          Kestrel Editorial Journal, Issue IV
+        </cite>
+        <span class="w-8 h-[1px] bg-brand-dark/30"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 06. FOOTER (Last element in normal document flow - No blank area below) -->
+  <!-- ========================================================================= -->
+  <footer class="bg-[#FAF9F9] text-brand-dark pt-16 pb-10 border-t border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Upper Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-brand-border">
+        
+        <!-- Brand Info -->
+        <div class="lg:col-span-2 pr-0 lg:pr-8">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-2.5 h-2.5 bg-brand-accent rounded-full"></span>
+            <span class="font-heading font-bold text-2xl tracking-[0.2em] uppercase text-brand-dark">KESTREL</span>
+          </div>
+          <p class="font-body text-sm text-brand-muted leading-relaxed mb-5 max-w-sm">
+            Curated objects for living, listening, and quiet ritual. Designed across studios in Kyoto, Copenhagen, and Portland.
+          </p>
+          <div class="font-mono text-xs text-brand-muted space-y-1">
+            <p>STUDIO CONTACT: hello@kestrel-store.com</p>
+            <p>HOURS: Mon – Fri, 09:00 – 18:00 CET</p>
+          </div>
+        </div>
+
+        <!-- Links Column 1 -->
+        <div>
+          <span class="font-mono text-xs text-brand-accent uppercase tracking-widest block mb-3 font-medium">COLLECTIONS</span>
+          <ul class="space-y-2 text-sm text-brand-muted">
+            <li><a href="#featured-products" class="hover:text-brand-dark transition-colors">Acoustic Monitors</a></li>
+            <li><a href="#featured-products" class="hover:text-brand-dark transition-colors">Cast Bronze &amp; Clay</a></li>
+            <li><a href="#featured-products" class="hover:text-brand-dark transition-colors">Heavy Selvedge Robes</a></li>
+            <li><a href="#featured-products" class="hover:text-brand-dark transition-colors">Desk &amp; Pour-Over</a></li>
+          </ul>
+        </div>
+
+        <!-- Links Column 2 -->
+        <div>
+          <span class="font-mono text-xs text-brand-accent uppercase tracking-widest block mb-3 font-medium">DISCIPLINE</span>
+          <ul class="space-y-2 text-sm text-brand-muted">
+            <li><a href="#craft-story" class="hover:text-brand-dark transition-colors">Woodland Provenance</a></li>
+            <li><a href="#craft-story" class="hover:text-brand-dark transition-colors">0.03mm Milling</a></li>
+            <li><a href="#craft-story" class="hover:text-brand-dark transition-colors">Natural Dye Baths</a></li>
+            <li><a href="#craft-story" class="hover:text-brand-dark transition-colors">Repair &amp; Care Guide</a></li>
+          </ul>
+        </div>
+
+        <!-- Working Newsletter Form -->
+        <div>
+          <span class="font-mono text-xs text-brand-accent uppercase tracking-widest block mb-3 font-medium">DISPATCHES</span>
+          <p class="text-xs text-brand-muted leading-relaxed mb-3">
+            Quiet quarterly letters on material studies and studio releases.
+          </p>
+          <form id="newsletter-form" class="space-y-2" novalidate>
+            <div class="flex">
+              <input 
+                id="newsletter-email" 
+                type="email" 
+                placeholder="name@domain.com" 
+                class="w-full bg-brand-surface border border-brand-border px-3 py-2 text-xs font-mono text-brand-dark placeholder:text-brand-muted focus:outline-none focus:border-brand-accent rounded-l-xs"
+                required
+              />
+              <button 
+                type="submit" 
+                class="bg-brand-dark hover:bg-brand-accent text-white px-3.5 py-2 text-xs font-mono transition-colors rounded-r-xs uppercase"
+              >
+                Join
+              </button>
+            </div>
+            <p id="newsletter-msg" class="text-[11px] font-mono text-brand-accent hidden"></p>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Lower Row -->
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-brand-muted">
+        <p>© 2026 Kestrel Studio Ltd. All rights reserved.</p>
+        <div class="flex items-center gap-6">
+          <a href="#hero" class="hover:text-brand-dark transition-colors">Terms</a>
+          <a href="#hero" class="hover:text-brand-dark transition-colors">Privacy</a>
+          <button id="back-to-top-btn" type="button" class="hover:text-brand-accent transition-colors flex items-center gap-1">
+            <span>Top</span>
+            <span class="material-symbols-outlined text-14">arrow_upward</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- MODALS & OVERLAYS (Direct children of <body>, position: fixed, outside flow) -->
+  <!-- ========================================================================= -->
+
+  <!-- 1. CART DRAWER ("Your Satchel") OVERLAY -->
+  <div 
+    id="cart-backdrop" 
+    class="fixed inset-0 bg-[#072427]/50 backdrop-blur-sm z-[9998] opacity-0 pointer-events-none transition-opacity duration-300 ease-out"
+    aria-hidden="true"
+  ></div>
+
+  <aside 
+    id="cart-panel" 
+    class="fixed top-0 right-0 h-[100dvh] w-full max-w-[420px] bg-[#FAF9F9] border-l border-brand-border z-[9999] translate-x-full invisible transition-all duration-300 ease-out flex flex-col shadow-2xl"
+    role="dialog" 
+    aria-modal="true" 
+    aria-label="Shopping Cart Drawer"
+    aria-hidden="true"
+  >
+    <!-- Drawer Header -->
+    <div class="p-5 sm:p-6 border-b border-brand-border flex items-center justify-between bg-white shrink-0">
+      <div>
+        <div class="flex items-center gap-2">
+          <h3 class="font-heading font-semibold text-xl text-brand-dark tracking-tight">Your Satchel</h3>
+          <span id="drawer-item-count" class="font-mono text-xs text-brand-muted">(0)</span>
+        </div>
+        <span class="font-mono text-[10px] text-brand-accent tracking-wider block mt-0.5 uppercase">
+          COMPLIMENTARY SHIPPING OVER $150
+        </span>
+      </div>
+
+      <button 
+        id="cart-close-btn" 
+        type="button" 
+        class="p-2 text-brand-dark/70 hover:text-brand-dark hover:bg-brand-surface rounded-xs transition-colors" 
+        aria-label="Close cart drawer"
+      >
+        <span class="material-symbols-outlined text-22">close</span>
+      </button>
+    </div>
+
+    <!-- Free Shipping Progress Bar Indicator -->
+    <div class="px-5 sm:px-6 py-2.5 bg-brand-surface border-b border-brand-border shrink-0">
+      <div class="flex justify-between items-center text-xs font-mono mb-1">
+        <span id="shipping-progress-text" class="text-brand-muted text-[11px]">Add $150.00 for complimentary shipping</span>
+        <span id="shipping-progress-percent" class="font-semibold text-brand-dark text-[11px]">0%</span>
+      </div>
+      <div class="w-full bg-[#E5E3DC] h-1.5 rounded-full overflow-hidden">
+        <div id="shipping-progress-bar" class="bg-brand-accent h-full w-0 transition-all duration-300"></div>
+      </div>
+    </div>
+
+    <!-- Cart Items Container (Scrollable) -->
+    <div 
+      id="cart-items-container" 
+      class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4"
+      data-lenis-prevent
+    >
+      <!-- Rendered dynamically -->
+    </div>
+
+    <!-- Drawer Footer with Subtotal & Checkout -->
+    <div class="p-5 sm:p-6 border-t border-brand-border bg-white space-y-3 shrink-0">
+      <div class="space-y-1.5 text-xs font-mono">
+        <div class="flex justify-between text-brand-muted">
+          <span>Estimated Shipping</span>
+          <span id="cart-shipping-calc">Calculated at checkout</span>
+        </div>
+        <div class="flex justify-between text-base font-semibold text-brand-dark pt-1.5 border-t border-brand-border/60">
+          <span class="font-body font-medium">Subtotal</span>
+          <span id="cart-subtotal-val">$0.00</span>
+        </div>
+      </div>
+
+      <button 
+        id="checkout-btn" 
+        type="button" 
+        class="w-full py-3.5 bg-brand-accent hover:bg-brand-accentHover text-white font-body text-xs uppercase tracking-[0.18em] font-medium rounded-xs transition-colors shadow-sm flex items-center justify-center gap-2"
+      >
+        <span class="material-symbols-outlined text-18">lock</span>
+        <span>Proceed to Checkout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- 2. SEARCH OVERLAY MODAL -->
+  <div 
+    id="search-backdrop" 
+    class="fixed inset-0 bg-[#072427]/60 backdrop-blur-sm z-[9990] opacity-0 pointer-events-none transition-opacity duration-300 ease-out"
+    aria-hidden="true"
+  ></div>
+
+  <div 
+    id="search-modal" 
+    class="fixed inset-x-4 top-16 sm:top-24 max-w-2xl mx-auto bg-[#FAF9F9] border border-brand-border rounded-lg shadow-2xl z-[9991] opacity-0 -translate-y-4 pointer-events-none transition-all duration-300 ease-out flex flex-col overflow-hidden max-h-[80vh]"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Search Collection"
+  >
+    <!-- Search Bar Header -->
+    <div class="p-4 sm:p-6 border-b border-brand-border flex items-center gap-3 bg-white">
+      <span class="material-symbols-outlined text-brand-muted text-22">search</span>
+      <input 
+        id="search-input" 
+        type="search" 
+        placeholder="Search incense, monitors, robes, kettle..." 
+        class="w-full bg-transparent font-body text-base text-brand-dark placeholder:text-brand-muted focus:outline-none"
+        autocomplete="off"
+      />
+      <button 
+        id="search-close-btn" 
+        type="button" 
+        class="p-1.5 text-brand-muted hover:text-brand-dark rounded-xs"
+        aria-label="Close search"
+      >
+        <span class="material-symbols-outlined text-20">close</span>
+      </button>
+    </div>
+
+    <!-- Search Results List -->
+    <div id="search-results-container" class="flex-1 overflow-y-auto p-4 sm:p-6 divide-y divide-brand-border/60" data-lenis-prevent>
+      <p class="text-xs font-mono text-brand-muted text-center py-6">Type to search across Kestrel curated series...</p>
+    </div>
+  </div>
+
+  <!-- 3. PRODUCT QUICK VIEW MODAL -->
+  <div 
+    id="quick-view-backdrop" 
+    class="fixed inset-0 bg-[#072427]/60 backdrop-blur-sm z-[9992] opacity-0 pointer-events-none transition-opacity duration-300 ease-out"
+    aria-hidden="true"
+  ></div>
+
+  <div 
+    id="quick-view-modal" 
+    class="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:max-w-3xl sm:w-full bg-[#FAF9F9] border border-brand-border rounded-lg shadow-2xl z-[9993] opacity-0 scale-95 pointer-events-none transition-all duration-300 ease-out overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Product Quick View"
+  >
+    <!-- Left: Image Preview -->
+    <div class="relative w-full md:w-1/2 bg-brand-surfaceAlt aspect-[4/3] md:aspect-auto overflow-hidden">
+      <img 
+        id="qv-image" 
+        src="" 
+        alt="" 
+        class="w-full h-full object-cover object-center"
+      />
+      <button 
+        id="qv-close-btn" 
+        type="button" 
+        class="absolute top-3 right-3 md:hidden p-2 bg-white/90 rounded-full text-brand-dark"
+        aria-label="Close quick view"
+      >
+        <span class="material-symbols-outlined text-20">close</span>
+      </button>
+    </div>
+
+    <!-- Right: Content & Add to Bag -->
+    <div class="p-6 sm:p-8 w-full md:w-1/2 flex flex-col justify-between overflow-y-auto" data-lenis-prevent>
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <span id="qv-category" class="font-mono text-xs uppercase tracking-wider text-brand-accent"></span>
+          <button id="qv-close-btn-desktop" type="button" class="hidden md:block p-1 text-brand-muted hover:text-brand-dark" aria-label="Close modal">
+            <span class="material-symbols-outlined text-20">close</span>
+          </button>
+        </div>
+        <h3 id="qv-name" class="font-heading font-medium text-2xl text-brand-dark tracking-tight mb-2"></h3>
+        <p id="qv-price" class="font-mono text-lg font-semibold text-brand-dark mb-4"></p>
+        <p id="qv-description" class="font-body text-xs sm:text-sm text-brand-muted leading-relaxed font-light mb-6"></p>
+
+        <!-- Color Swatches Selection -->
+        <div class="mb-6">
+          <label class="block font-mono text-xs text-brand-dark uppercase tracking-wider mb-2">
+            Color Variant: <span id="qv-selected-color-name" class="text-brand-accent font-semibold"></span>
+          </label>
+          <div id="qv-swatches" class="flex items-center gap-2"></div>
+        </div>
+      </div>
+
+      <button 
+        id="qv-add-btn" 
+        type="button" 
+        class="w-full py-3.5 bg-brand-accent hover:bg-brand-accentHover text-white font-body text-xs uppercase tracking-[0.18em] font-medium rounded-xs transition-colors flex items-center justify-center gap-2 shadow-sm"
+      >
+        <span class="material-symbols-outlined text-18">add</span>
+        <span>Add to Satchel</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 4. CHECKOUT MODAL -->
+  <div 
+    id="checkout-backdrop" 
+    class="fixed inset-0 bg-[#072427]/60 backdrop-blur-sm z-[9994] opacity-0 pointer-events-none transition-opacity duration-300 ease-out"
+    aria-hidden="true"
+  ></div>
+
+  <div 
+    id="checkout-modal" 
+    class="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:max-w-xl sm:w-full bg-[#FAF9F9] border border-brand-border rounded-lg shadow-2xl z-[9995] opacity-0 scale-95 pointer-events-none transition-all duration-300 ease-out flex flex-col max-h-[90vh] overflow-hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Checkout"
+  >
+    <!-- Header -->
+    <div class="p-5 sm:p-6 border-b border-brand-border flex items-center justify-between bg-white shrink-0">
+      <div>
+        <span class="font-mono text-[10px] text-brand-accent tracking-widest uppercase block">KESTREL ARCHIVE CHECKOUT</span>
+        <h3 class="font-heading font-medium text-xl text-brand-dark">Shipping &amp; Order Details</h3>
+      </div>
+      <button id="checkout-close-btn" type="button" class="p-1.5 text-brand-muted hover:text-brand-dark rounded-xs" aria-label="Close checkout">
+        <span class="material-symbols-outlined text-20">close</span>
+      </button>
+    </div>
+
+    <!-- Body & Form -->
+    <div class="p-5 sm:p-6 overflow-y-auto space-y-6 flex-1" data-lenis-prevent>
+      <!-- Order Summary Card -->
+      <div class="p-4 bg-brand-surface border border-brand-border/70 rounded-xs space-y-2 text-xs font-mono">
+        <div class="flex justify-between text-brand-muted">
+          <span>Items in Satchel</span>
+          <span id="checkout-items-count">0 items</span>
+        </div>
+        <div class="flex justify-between text-brand-muted">
+          <span>Subtotal</span>
+          <span id="checkout-subtotal">$0.00</span>
+        </div>
+        <div class="flex justify-between text-brand-muted">
+          <span>Estimated Shipping</span>
+          <span id="checkout-shipping">Free</span>
+        </div>
+        <div class="flex justify-between text-sm font-semibold text-brand-dark pt-2 border-t border-brand-border">
+          <span>Total</span>
+          <span id="checkout-grand-total">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form id="checkout-form" class="space-y-4" novalidate>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="co-name" class="block font-mono text-[11px] uppercase tracking-wider text-brand-dark mb-1">Full Name *</label>
+            <input id="co-name" type="text" class="w-full bg-white border border-brand-border px-3 py-2 text-xs font-mono rounded-xs focus:outline-none focus:border-brand-accent" required />
+          </div>
+          <div>
+            <label for="co-email" class="block font-mono text-[11px] uppercase tracking-wider text-brand-dark mb-1">Email Address *</label>
+            <input id="co-email" type="email" class="w-full bg-white border border-brand-border px-3 py-2 text-xs font-mono rounded-xs focus:outline-none focus:border-brand-accent" required />
+          </div>
+        </div>
+
+        <div>
+          <label for="co-address" class="block font-mono text-[11px] uppercase tracking-wider text-brand-dark mb-1">Delivery Address *</label>
+          <input id="co-address" type="text" class="w-full bg-white border border-brand-border px-3 py-2 text-xs font-mono rounded-xs focus:outline-none focus:border-brand-accent" required />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="co-city" class="block font-mono text-[11px] uppercase tracking-wider text-brand-dark mb-1">City *</label>
+            <input id="co-city" type="text" class="w-full bg-white border border-brand-border px-3 py-2 text-xs font-mono rounded-xs focus:outline-none focus:border-brand-accent" required />
+          </div>
+          <div>
+            <label for="co-postal" class="block font-mono text-[11px] uppercase tracking-wider text-brand-dark mb-1">Postal Code *</label>
+            <input id="co-postal" type="text" class="w-full bg-white border border-brand-border px-3 py-2 text-xs font-mono rounded-xs focus:outline-none focus:border-brand-accent" required />
+          </div>
+        </div>
+
+        <p id="checkout-error" class="text-xs font-mono text-brand-accent hidden"></p>
+
+        <button 
+          id="co-submit-btn" 
+          type="submit" 
+          class="w-full py-3.5 bg-brand-accent hover:bg-brand-accentHover text-white font-body text-xs uppercase tracking-[0.18em] font-medium rounded-xs transition-colors flex items-center justify-center gap-2 shadow-sm"
+        >
+          <span>Confirm &amp; Place Order</span>
+          <span class="material-symbols-outlined text-18">check_circle</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. ORDER CONFIRMATION MODAL -->
+  <div 
+    id="confirmation-backdrop" 
+    class="fixed inset-0 bg-[#072427]/60 backdrop-blur-sm z-[9996] opacity-0 pointer-events-none transition-opacity duration-300 ease-out"
+    aria-hidden="true"
+  ></div>
+
+  <div 
+    id="confirmation-modal" 
+    class="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:max-w-md sm:w-full bg-[#FAF9F9] border border-brand-border rounded-lg shadow-2xl z-[9997] opacity-0 scale-95 pointer-events-none transition-all duration-300 ease-out p-6 sm:p-8 text-center flex flex-col items-center"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Order Confirmation"
+  >
+    <div class="w-14 h-14 bg-brand-accent/10 rounded-full flex items-center justify-center text-brand-accent mb-4">
+      <span class="material-symbols-outlined text-32">done_all</span>
+    </div>
+    <span class="font-mono text-xs uppercase tracking-[0.2em] text-brand-accent font-semibold block mb-1">
+      ORDER CONFIRMED
+    </span>
+    <h3 class="font-heading font-medium text-2xl text-brand-dark mb-2">
+      Thank you for your order.
+    </h3>
+    <p class="font-body text-xs sm:text-sm text-brand-muted leading-relaxed font-light mb-4">
+      Your studio parcel is being prepared in our workshop. A quiet confirmation letter has been dispatched to your email.
+    </p>
+
+    <div class="w-full bg-brand-surface border border-brand-border/70 p-3.5 rounded-xs font-mono text-xs text-brand-dark space-y-1 mb-6 text-left">
+      <div class="flex justify-between">
+        <span class="text-brand-muted">ORDER NUMBER</span>
+        <span id="conf-order-num" class="font-semibold text-brand-accent"></span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-brand-muted">RECIPIENT</span>
+        <span id="conf-recipient" class="font-medium"></span>
+      </div>
+    </div>
+
+    <button 
+      id="conf-continue-btn" 
+      type="button" 
+      class="w-full py-3 bg-brand-dark hover:bg-brand-accent text-white font-mono text-xs uppercase tracking-[0.15em] rounded-xs transition-colors"
+    >
+      Discover More Objects
+    </button>
+  </div>
+
+  <!-- 6. TOAST NOTIFICATION -->
+  <div 
+    id="toast-notification" 
+    class="fixed bottom-6 right-6 z-50 bg-brand-dark text-white px-4 py-3 rounded-xs font-mono text-xs tracking-wide shadow-xl flex items-center gap-3 translate-y-16 opacity-0 pointer-events-none transition-all duration-300 ease-out"
+    role="status" 
+    aria-live="polite"
+  >
+    <span class="material-symbols-outlined text-18 text-brand-accent">check_circle</span>
+    <span id="toast-message">Item added to satchel.</span>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT APPLICATION CODE -->
+  <!-- ========================================================================= -->
+  <script>
+    (function () {
+      'use strict';
+
+      // -----------------------------------------------------------
+      // 0. DATA MODELS: PRODUCTS & PERSPECTIVES
+      // -----------------------------------------------------------
+      const PRODUCTS_DATA = [
+        {
+          id: "KST-091",
+          code: "KST-091",
+          name: "Kyoto Cast Bronze Incense Well",
+          category: "Home Goods",
+          price: 92,
+          colors: [
+            { name: "Raw Bronze", hex: "#9E7B4F" },
+            { name: "Aged Verdigris", hex: "#465A54" },
+            { name: "Blackened Iron", hex: "#242526" }
+          ],
+          image: "https://images.unsplash.com/photo-1602928321679-560bb453f190?auto=format&fit=crop&w=900&q=80",
+          description: "Poured in Takaoka using 400-year-old brass casting techniques. Features a machined solid center pin to secure standard and dhoop incense sticks with ash catchment."
+        },
+        {
+          id: "KST-044",
+          code: "KST-044",
+          name: "Faceted Walnut Acoustic Monitor Pair",
+          category: "Audio Gear",
+          price: 480,
+          colors: [
+            { name: "American Walnut", hex: "#5C4033" },
+            { name: "Charred Ash", hex: "#1A1A1A" },
+            { name: "Natural Oak", hex: "#C2A679" }
+          ],
+          image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=900&q=80",
+          description: "Sculpted from air-dried solid walnut heartwood. Features a custom 4-inch paper-cone driver and silk dome tweeter tuned for ultra-low phase distortion."
+        },
+        {
+          id: "KST-077",
+          code: "KST-077",
+          name: "Heavy Cotton Kimono Robe-Coat",
+          category: "Apparel",
+          price: 220,
+          colors: [
+            { name: "Washed Terracotta", hex: "#B85D43" },
+            { name: "Kuro Indigo", hex: "#18191B" },
+            { name: "Bone Ash", hex: "#ECE8E1" }
+          ],
+          image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80",
+          description: "Tailored from 460gsm heavy selvedge twill cotton. Designed with dropped shoulders, deep patch pockets, and an unlined drape that softens with age."
+        },
+        {
+          id: "KST-019",
+          code: "KST-019",
+          name: "Hand-Hammered Copper Pour-Over Kettle",
+          category: "Home Goods",
+          price: 135,
+          colors: [
+            { name: "Spun Copper", hex: "#B86B4B" },
+            { name: "Oxidized Umber", hex: "#3B2F2F" }
+          ],
+          image: "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=900&q=80",
+          description: "Formed over boxwood anvils in Tsubame-Sanjo. Delivers laminar gooseneck water control for precise extraction, with a heat-resistant walnut handle."
+        },
+        {
+          id: "KST-058",
+          code: "KST-058",
+          name: "Brushed Brass & Smoked Oak Headphone Stand",
+          category: "Audio Gear",
+          price: 160,
+          colors: [
+            { name: "Brushed Brass", hex: "#D4AF37" },
+            { name: "Satin Nickel", hex: "#A8A9AD" },
+            { name: "Matte Black", hex: "#222222" }
+          ],
+          image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80",
+          description: "Counterbalanced solid brass armature grounded on a smoked oak plinth. Designed to distribute headband pressure evenly across the curved arc."
+        },
+        {
+          id: "KST-083",
+          code: "KST-083",
+          name: "Raw Selvedge Linen Work Apron",
+          category: "Apparel",
+          price: 110,
+          colors: [
+            { name: "Natural Flax", hex: "#C7B299" },
+            { name: "Charcoal Slate", hex: "#383B3E" }
+          ],
+          image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=900&q=80",
+          description: "Woven from unbleached European flax on vintage shuttle looms. Features cross-back vegetable-tanned leather straps and brass hardware rivets."
+        }
+      ];
+
+      const PERSPECTIVES_DATA = [
+        {
+          id: "card-01",
+          num: "01",
+          label: "[ PERSPECTIVE 01 ]",
+          headingLine1: "Material &",
+          headingLine2: "Origin.",
+          summary: "Before the tool touches the timber or the clay enters the kiln, quality is decided by origin. We work exclusively with slow-growth American walnut, unrefined Japanese stoneware clays, and organic long-staple fibers that gain character through decades of human touch.",
+          principles: [
+            {
+              num: "01",
+              title: "Fell only what is mature.",
+              desc: "Timber harvested strictly from managed forests; air-dried for twenty-four months to nullify tension."
+            },
+            {
+              num: "02",
+              title: "Honor the natural grain.",
+              desc: "No synthetic veneers or opaque polyurethane. The heartwood's natural ring density dictates acoustic geometry."
+            },
+            {
+              num: "03",
+              title: "Trace every element home.",
+              desc: "Single-source provenance from Kyoto ateliers to Pacific Northwest timber stands, verified by hand."
+            }
+          ],
+          image: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=1200&q=80",
+          imageAlt: "Natural air-dried walnut timber logs showing concentric annual growth rings",
+          caption: "FIG. 01 / TIMBER PROVENANCE & GROWTH RINGS",
+          topOffsetDesktop: 88,
+          topOffsetMobile: 76,
+          zIndex: 1,
+        },
+        {
+          id: "card-02",
+          num: "02",
+          label: "[ PERSPECTIVE 02 ]",
+          headingLine1: "Process &",
+          headingLine2: "Discipline.",
+          summary: "We make things slowly, bound by exacting rules and deliberate repetition. In our workshops, perfection is neither an accident nor an impulse—it is the quiet consequence of returning to the same grain and the same tolerance until nothing superfluous remains.",
+          principles: [
+            {
+              num: "01",
+              title: "Measure twice, mill once.",
+              desc: "The wood remembers the tool; we calibrate geometry to a hundredth of a millimeter before cutting."
+            },
+            {
+              num: "02",
+              title: "Repeat until it is right.",
+              desc: "Craft is the patient rhythm of muscle memory and calibrated kiln fire reduction."
+            },
+            {
+              num: "03",
+              title: "Finish what is quiet.",
+              desc: "True luxury removes ornament until only proportion, balance, and tactile resonance remain."
+            }
+          ],
+          image: "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=1200&q=80",
+          imageAlt: "Precision Japanese wood plane shaving walnut wood with translucent paper-thin curls",
+          caption: "FIG. 02 / THE WORKBENCH & HAND PLANE",
+          topOffsetDesktop: 120,
+          topOffsetMobile: 96,
+          zIndex: 2,
+        },
+        {
+          id: "card-03",
+          num: "03",
+          label: "[ PERSPECTIVE 03 ]",
+          headingLine1: "Use &",
+          headingLine2: "Longevity.",
+          summary: "An object is only half-finished when it departs the maker's bench. The remainder of its form is completed by the oil of your fingertips, the gentle scuffs of daily ritual, and the patina of honest wear that makes an everyday artifact irreplaceable.",
+          principles: [
+            {
+              num: "01",
+              title: "Design for repairability.",
+              desc: "Dry-friction joinery and modular brass hardware ensure components can be disassembled and serviced across generations."
+            },
+            {
+              num: "02",
+              title: "Embrace the honest patina.",
+              desc: "Unsealed brass oxidizes and vegetable-tanned leather darkens, recording the tangible history of your home."
+            },
+            {
+              num: "03",
+              title: "Outlive the century.",
+              desc: "We reject engineered obsolescence. If an object cannot endure forty years of daily ritual, we will not build it."
+            }
+          ],
+          image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1200&q=80",
+          imageAlt: "Antique handloom and weathered selvedge textiles showing rich organic texture",
+          caption: "FIG. 03 / THE PATINA OF HONEST WEAR",
+          topOffsetDesktop: 152,
+          topOffsetMobile: 116,
+          zIndex: 3,
+        }
+      ];
+
+      // -----------------------------------------------------------
+      // 1. IN-MEMORY CART STATE (No localStorage, as specified)
+      // -----------------------------------------------------------
+      const cart = [];
+      const FREE_SHIPPING_THRESHOLD = 150;
+
+      function getCartTotalCount() {
+        return cart.reduce((sum, item) => sum + item.quantity, 0);
+      }
+
+      function getCartSubtotal() {
+        return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      }
+
+      function addToCart(product, colorVariant, quantity = 1) {
+        const selectedColor = colorVariant || product.colors[0].name;
+        const existingIndex = cart.findIndex(
+          item => item.id === product.id && item.color === selectedColor
+        );
+
+        if (existingIndex > -1) {
+          cart[existingIndex].quantity += quantity;
+        } else {
+          cart.push({
+            id: product.id,
+            name: product.name,
+            price: Number(product.price),
+            color: selectedColor,
+            image: product.image,
+            category: product.category,
+            quantity: quantity
+          });
+        }
+
+        updateCartUI();
+        triggerBagBadgeBump();
+        showToast(`Added: ${product.name} (${selectedColor})`);
+        openCartDrawer();
+      }
+
+      function updateCartQuantity(id, color, delta) {
+        const itemIndex = cart.findIndex(i => i.id === id && i.color === color);
+        if (itemIndex > -1) {
+          cart[itemIndex].quantity += delta;
+          if (cart[itemIndex].quantity <= 0) {
+            cart.splice(itemIndex, 1);
+          }
+        }
+        updateCartUI();
+      }
+
+      function removeCartItem(id, color) {
+        const itemIndex = cart.findIndex(i => i.id === id && i.color === color);
+        if (itemIndex > -1) {
+          const removedName = cart[itemIndex].name;
+          cart.splice(itemIndex, 1);
+          updateCartUI();
+          showToast(`Removed: ${removedName}`);
+        }
+      }
+
+      // -----------------------------------------------------------
+      // 2. LENIS SMOOTH SCROLL INITIALIZATION
+      // -----------------------------------------------------------
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let lenis = null;
+
+      if (!prefersReducedMotion && typeof Lenis !== 'undefined') {
+        lenis = new Lenis({
+          lerp: 0.08,
+          smoothWheel: true,
+          wheelMultiplier: 1.0,
+        });
+
+        lenis.on('scroll', ScrollTrigger.update);
+
+        gsap.ticker.add((time) => {
+          lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+      }
+
+      // Scroll Progress Bar Update
+      window.addEventListener('scroll', () => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = h > 0 ? window.scrollY / h : 0;
+        const bar = document.getElementById('scroll-progress-bar');
+        if (bar) bar.style.transform = `scaleX(${progress})`;
+      }, { passive: true });
+
+      // -----------------------------------------------------------
+      // 3. TOAST & NOTIFICATION HELPERS
+      // -----------------------------------------------------------
+      let toastTimer = null;
+      function showToast(msg) {
+        const toast = document.getElementById('toast-notification');
+        const text = document.getElementById('toast-message');
+        if (!toast || !text) return;
+
+        text.textContent = msg;
+        toast.classList.remove('translate-y-16', 'opacity-0', 'pointer-events-none');
+
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toast.classList.add('translate-y-16', 'opacity-0', 'pointer-events-none');
+        }, 2800);
+      }
+
+      function triggerBagBadgeBump() {
+        const badge = document.getElementById('cart-count-badge');
+        if (!badge) return;
+        badge.classList.remove('bag-bump');
+        void badge.offsetWidth; // Force reflow
+        badge.classList.add('bag-bump');
+      }
+
+      // -----------------------------------------------------------
+      // 4. CART DRAWER UI & CONTROLS
+      // -----------------------------------------------------------
+      const cartBackdrop = document.getElementById('cart-backdrop');
+      const cartPanel = document.getElementById('cart-panel');
+      const cartToggleBtn = document.getElementById('cart-toggle-btn');
+      const cartCloseBtn = document.getElementById('cart-close-btn');
+      const checkoutBtn = document.getElementById('checkout-btn');
+
+      function openCartDrawer() {
+        if (!cartPanel || !cartBackdrop) return;
+        cartBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+        cartPanel.classList.remove('translate-x-full', 'invisible');
+        cartPanel.setAttribute('aria-hidden', 'false');
+        if (lenis) lenis.stop();
+        document.body.style.overflow = 'hidden';
+        if (cartCloseBtn) cartCloseBtn.focus();
+      }
+
+      function closeCartDrawer() {
+        if (!cartPanel || !cartBackdrop) return;
+        cartBackdrop.classList.add('opacity-0', 'pointer-events-none');
+        cartPanel.classList.add('translate-x-full', 'invisible');
+        cartPanel.setAttribute('aria-hidden', 'true');
+        if (lenis) lenis.start();
+        document.body.style.overflow = '';
+        if (cartToggleBtn) cartToggleBtn.focus();
+      }
+
+      if (cartToggleBtn) cartToggleBtn.addEventListener('click', openCartDrawer);
+      if (cartCloseBtn) cartCloseBtn.addEventListener('click', closeCartDrawer);
+      if (cartBackdrop) cartBackdrop.addEventListener('click', closeCartDrawer);
+
+      function updateCartUI() {
+        const count = getCartTotalCount();
+        const subtotal = getCartSubtotal();
+
+        // Navbar & Header Badges
+        const countBadge = document.getElementById('cart-count-badge');
+        const drawerCount = document.getElementById('drawer-item-count');
+        if (countBadge) countBadge.textContent = count;
+        if (drawerCount) drawerCount.textContent = `(${count})`;
+
+        // Subtotal & Shipping calculation
+        const subtotalEl = document.getElementById('cart-subtotal-val');
+        if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+
+        const shippingCalcEl = document.getElementById('cart-shipping-calc');
+        if (shippingCalcEl) {
+          shippingCalcEl.textContent = subtotal >= FREE_SHIPPING_THRESHOLD ? 'Free' : (subtotal > 0 ? '$15.00' : 'Calculated at checkout');
+        }
+
+        // Free Shipping Progress Bar
+        const progressText = document.getElementById('shipping-progress-text');
+        const progressPercent = document.getElementById('shipping-progress-percent');
+        const progressBar = document.getElementById('shipping-progress-bar');
+
+        if (progressBar && progressText && progressPercent) {
+          if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+            progressText.textContent = "You've unlocked complimentary shipping!";
+            progressPercent.textContent = '100%';
+            progressBar.style.width = '100%';
+            progressBar.classList.add('bg-emerald-600');
+            progressBar.classList.remove('bg-brand-accent');
+          } else {
+            const diff = (FREE_SHIPPING_THRESHOLD - subtotal).toFixed(2);
+            const pct = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
+            progressText.textContent = `Add $${diff} for complimentary shipping`;
+            progressPercent.textContent = `${pct}%`;
+            progressBar.style.width = `${pct}%`;
+            progressBar.classList.add('bg-brand-accent');
+            progressBar.classList.remove('bg-emerald-600');
+          }
+        }
+
+        // Render Cart Items or Empty State
+        const itemsContainer = document.getElementById('cart-items-container');
+        if (!itemsContainer) return;
+
+        if (cart.length === 0) {
+          itemsContainer.innerHTML = `
+            <div class="h-full flex flex-col items-center justify-center text-center py-12 px-4 space-y-4">
+              <span class="material-symbols-outlined text-48 text-brand-border">shopping_bag</span>
+              <div>
+                <p class="font-heading font-medium text-lg text-brand-dark">Your satchel is empty</p>
+                <p class="font-body text-xs text-brand-muted mt-1 max-w-xs">Objects chosen with patience remain companions for decades.</p>
+              </div>
+              <button 
+                id="cart-discover-btn" 
+                type="button" 
+                class="px-5 py-2.5 bg-brand-dark text-white rounded-xs font-mono text-xs uppercase tracking-wider hover:bg-brand-accent transition-colors"
+              >
+                Discover Collection
+              </button>
+            </div>
+          `;
+          const discoverBtn = document.getElementById('cart-discover-btn');
+          if (discoverBtn) {
+            discoverBtn.addEventListener('click', () => {
+              closeCartDrawer();
+              if (lenis) {
+                lenis.scrollTo('#featured-products', { offset: -80, duration: 1.2 });
+              } else {
+                document.querySelector('#featured-products')?.scrollIntoView({ behavior: 'smooth' });
+              }
+            });
+          }
+        } else {
+          itemsContainer.innerHTML = cart.map(item => `
+            <div class="cart-item flex gap-4 p-3 bg-white border border-brand-border rounded-xs shadow-2xs">
+              <img src="${item.image}" alt="${item.name}" class="w-16 h-20 object-cover rounded-xs border border-brand-border shrink-0" />
+              <div class="flex-1 flex flex-col justify-between">
+                <div>
+                  <div class="flex justify-between items-start gap-2">
+                    <h4 class="font-heading font-medium text-xs sm:text-sm text-brand-dark leading-snug">${item.name}</h4>
+                    <span class="font-mono text-xs font-semibold text-brand-dark">$${(item.price * item.quantity).toFixed(2)}</span>
+                  </div>
+                  <span class="font-mono text-[11px] text-brand-muted block mt-0.5">Color: ${item.color}</span>
+                </div>
+                <div class="flex items-center justify-between pt-2">
+                  <div class="flex items-center border border-brand-border rounded-xs">
+                    <button type="button" class="cart-qty-btn px-2 py-0.5 text-brand-dark hover:bg-brand-surface text-xs font-mono" data-id="${item.id}" data-color="${item.color}" data-delta="-1" aria-label="Decrease quantity">−</button>
+                    <span class="px-2 text-xs font-mono font-medium">${item.quantity}</span>
+                    <button type="button" class="cart-qty-btn px-2 py-0.5 text-brand-dark hover:bg-brand-surface text-xs font-mono" data-id="${item.id}" data-color="${item.color}" data-delta="1" aria-label="Increase quantity">+</button>
+                  </div>
+                  <button type="button" class="cart-remove-btn text-[11px] font-mono text-brand-accent hover:underline" data-id="${item.id}" data-color="${item.color}">Remove</button>
+                </div>
+              </div>
+            </div>
+          `).join('');
+
+          // Bind qty and remove buttons
+          itemsContainer.querySelectorAll('.cart-qty-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const id = btn.getAttribute('data-id');
+              const color = btn.getAttribute('data-color');
+              const delta = parseInt(btn.getAttribute('data-delta'), 10);
+              updateCartQuantity(id, color, delta);
+            });
+          });
+
+          itemsContainer.querySelectorAll('.cart-remove-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const id = btn.getAttribute('data-id');
+              const color = btn.getAttribute('data-color');
+              removeCartItem(id, color);
+            });
+          });
+        }
+      }
+
+      // -----------------------------------------------------------
+      // 5. PRODUCTS GRID RENDERING & FILTER CHIPS
+      // -----------------------------------------------------------
+      let activeFilter = 'All';
+
+      function renderFilterChips() {
+        const wrapper = document.getElementById('filter-chips-wrapper');
+        if (!wrapper) return;
+
+        const categories = ['All', 'Home Goods', 'Audio Gear', 'Apparel'];
+        const counts = {
+          'All': PRODUCTS_DATA.length,
+          'Home Goods': PRODUCTS_DATA.filter(p => p.category === 'Home Goods').length,
+          'Audio Gear': PRODUCTS_DATA.filter(p => p.category === 'Audio Gear').length,
+          'Apparel': PRODUCTS_DATA.filter(p => p.category === 'Apparel').length,
+        };
+
+        wrapper.innerHTML = categories.map(cat => {
+          const isActive = cat === activeFilter;
+          return `
+            <button 
+              type="button" 
+              class="filter-chip px-3 py-1.5 rounded-full font-mono text-xs transition-all duration-200 flex items-center gap-1.5 ${isActive ? 'bg-brand-dark text-white shadow-xs' : 'bg-white border border-brand-border text-brand-dark hover:bg-brand-surface'}"
+              data-cat="${cat}"
+            >
+              <span>${cat}</span>
+              <span class="text-[10px] opacity-70">(${counts[cat]})</span>
+            </button>
+          `;
+        }).join('');
+
+        wrapper.querySelectorAll('.filter-chip').forEach(btn => {
+          btn.addEventListener('click', () => {
+            activeFilter = btn.getAttribute('data-cat');
+            renderFilterChips();
+            filterProductsGrid();
+          });
+        });
+      }
+
+      function renderProductsGrid(products) {
+        const grid = document.getElementById('products-grid');
+        if (!grid) return;
+
+        grid.innerHTML = products.map(product => {
+          const swatchesHtml = product.colors.map((c, i) => `
+            <button 
+              type="button" 
+              class="swatch-btn w-3.5 h-3.5 rounded-full focus:outline-none transition-all hover:scale-110 ${i === 0 ? 'ring-2 ring-brand-accent ring-offset-1' : 'ring-1 ring-black/15'}" 
+              style="background-color: ${c.hex};" 
+              data-color="${c.name}" 
+              data-product-id="${product.id}"
+              aria-label="${c.name}" 
+              title="${c.name}"
+            ></button>
+          `).join('');
+
+          return `
+            <article 
+              class="product-card-wrap relative z-10" 
+              data-id="${product.id}"
+              data-category="${product.category}"
+              data-selected-color="${product.colors[0].name}"
+            >
+              <div class="product-card-inner group bg-white border border-brand-border rounded-sm overflow-hidden flex flex-col h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-dark/5">
+                
+                <!-- Image Box with Quick View Trigger -->
+                <div class="product-image-trigger relative aspect-[16/11] bg-brand-surface overflow-hidden cursor-pointer" data-id="${product.id}">
+                  <img 
+                    src="${product.image}" 
+                    alt="${product.name}" 
+                    class="product-img w-full h-[120%] -top-[10%] absolute object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <!-- Code Badge -->
+                  <div class="absolute top-2.5 left-2.5 bg-white/90 backdrop-blur-sm border border-brand-border px-2 py-0.5 rounded-xs">
+                    <span class="font-mono text-[10px] font-medium text-brand-dark tracking-wider">${product.code}</span>
+                  </div>
+                  <!-- Category Badge -->
+                  <div class="absolute top-2.5 right-2.5 bg-brand-dark/85 backdrop-blur-sm text-white px-2 py-0.5 rounded-xs">
+                    <span class="font-mono text-[10px] uppercase tracking-wider">${product.category}</span>
+                  </div>
+                  <!-- Quick View Hover Scrim -->
+                  <div class="absolute inset-0 bg-[#072427]/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                    <span class="px-3 py-1.5 bg-white/95 backdrop-blur-sm text-brand-dark font-mono text-[10px] uppercase tracking-wider rounded-xs shadow-sm flex items-center gap-1">
+                      <span class="material-symbols-outlined text-14">visibility</span>
+                      Quick View
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="p-4 sm:p-5 flex flex-col flex-1 justify-between">
+                  <div>
+                    <div class="flex items-baseline justify-between gap-2 mb-1">
+                      <span class="font-mono text-[11px] text-brand-muted uppercase tracking-wider">${product.category}</span>
+                      <span class="font-mono text-sm font-semibold text-brand-dark">$${product.price}</span>
+                    </div>
+                    <h3 class="font-heading font-medium text-base text-brand-dark tracking-tight line-clamp-1 group-hover:text-brand-accent transition-colors mb-1 cursor-pointer product-title-trigger" data-id="${product.id}">
+                      ${product.name}
+                    </h3>
+                    <p class="font-body text-[11px] text-brand-muted line-clamp-1 leading-normal mb-3">
+                      ${product.description}
+                    </p>
+                  </div>
+
+                  <!-- Bottom Action Row: Swatches & Add Button -->
+                  <div class="pt-2.5 border-t border-brand-border/60 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-1.5 card-swatches-group" role="radiogroup" aria-label="Color options">
+                      ${swatchesHtml}
+                    </div>
+
+                    <button 
+                      type="button" 
+                      class="card-add-btn py-1.5 px-3 bg-brand-surface hover:bg-brand-dark text-brand-dark hover:text-white border border-brand-border rounded-xs font-mono text-[11px] uppercase tracking-wider font-medium transition-colors flex items-center gap-1 group-btn"
+                      data-id="${product.id}"
+                    >
+                      <span class="material-symbols-outlined text-16 group-hover:rotate-90 transition-transform duration-200">add</span>
+                      <span>Add</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        // Bind Swatches on cards
+        grid.querySelectorAll('.product-card-wrap').forEach(card => {
+          const swatches = card.querySelectorAll('.swatch-btn');
+          swatches.forEach(swatch => {
+            swatch.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const color = swatch.getAttribute('data-color');
+              card.setAttribute('data-selected-color', color);
+              swatches.forEach(s => {
+                s.classList.remove('ring-2', 'ring-brand-accent', 'ring-offset-1');
+                s.classList.add('ring-1', 'ring-black/15');
+              });
+              swatch.classList.add('ring-2', 'ring-brand-accent', 'ring-offset-1');
+              swatch.classList.remove('ring-1', 'ring-black/15');
+            });
+          });
+
+          // Bind Add Button
+          const addBtn = card.querySelector('.card-add-btn');
+          if (addBtn) {
+            addBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const prodId = card.getAttribute('data-id');
+              const product = PRODUCTS_DATA.find(p => p.id === prodId);
+              const color = card.getAttribute('data-selected-color');
+              if (product) addToCart(product, color);
+            });
+          }
+
+          // Bind Quick View Triggers
+          const imgTrigger = card.querySelector('.product-image-trigger');
+          const titleTrigger = card.querySelector('.product-title-trigger');
+          const openQv = () => {
+            const prodId = card.getAttribute('data-id');
+            const product = PRODUCTS_DATA.find(p => p.id === prodId);
+            const color = card.getAttribute('data-selected-color');
+            if (product) openQuickView(product, color);
+          };
+          if (imgTrigger) imgTrigger.addEventListener('click', openQv);
+          if (titleTrigger) titleTrigger.addEventListener('click', openQv);
+        });
+      }
+
+      function filterProductsGrid() {
+        const grid = document.getElementById('products-grid');
+        if (!grid) return;
+
+        grid.style.opacity = '0.3';
+        setTimeout(() => {
+          const filtered = activeFilter === 'All' 
+            ? PRODUCTS_DATA 
+            : PRODUCTS_DATA.filter(p => p.category === activeFilter);
+          renderProductsGrid(filtered);
+          grid.style.opacity = '1';
+          if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+        }, 150);
+      }
+
+      // Initial Render of Products
+      renderFilterChips();
+      renderProductsGrid(PRODUCTS_DATA);
+
+      // -----------------------------------------------------------
+      // 6. QUICK VIEW MODAL
+      // -----------------------------------------------------------
+      const qvBackdrop = document.getElementById('quick-view-backdrop');
+      const qvModal = document.getElementById('quick-view-modal');
+      const qvCloseBtn = document.getElementById('qv-close-btn');
+      const qvCloseBtnDesktop = document.getElementById('qv-close-btn-desktop');
+      const qvAddBtn = document.getElementById('qv-add-btn');
+      let currentQvProduct = null;
+      let currentQvColor = null;
+
+      function openQuickView(product, initialColor) {
+        if (!qvModal || !qvBackdrop) return;
+        currentQvProduct = product;
+        currentQvColor = initialColor || product.colors[0].name;
+
+        document.getElementById('qv-image').src = product.image;
+        document.getElementById('qv-image').alt = product.name;
+        document.getElementById('qv-category').textContent = product.category;
+        document.getElementById('qv-name').textContent = product.name;
+        document.getElementById('qv-price').textContent = `$${product.price}`;
+        document.getElementById('qv-description').textContent = product.description;
+        document.getElementById('qv-selected-color-name').textContent = currentQvColor;
+
+        const swatchesContainer = document.getElementById('qv-swatches');
+        swatchesContainer.innerHTML = product.colors.map(c => `
+          <button 
+            type="button" 
+            class="qv-swatch-btn w-5 h-5 rounded-full focus:outline-none transition-all ${c.name === currentQvColor ? 'ring-2 ring-brand-accent ring-offset-2 scale-110' : 'ring-1 ring-black/20'}" 
+            style="background-color: ${c.hex};" 
+            data-color="${c.name}"
+            title="${c.name}"
+          ></button>
+        `).join('');
+
+        swatchesContainer.querySelectorAll('.qv-swatch-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            currentQvColor = btn.getAttribute('data-color');
+            document.getElementById('qv-selected-color-name').textContent = currentQvColor;
+            swatchesContainer.querySelectorAll('.qv-swatch-btn').forEach(b => {
+              b.classList.remove('ring-2', 'ring-brand-accent', 'ring-offset-2', 'scale-110');
+              b.classList.add('ring-1', 'ring-black/20');
+            });
+            btn.classList.add('ring-2', 'ring-brand-accent', 'ring-offset-2', 'scale-110');
+            btn.classList.remove('ring-1', 'ring-black/20');
+          });
+        });
+
+        qvBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+        qvModal.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+        if (lenis) lenis.stop();
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeQuickView() {
+        if (!qvModal || !qvBackdrop) return;
+        qvBackdrop.classList.add('opacity-0', 'pointer-events-none');
+        qvModal.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        if (lenis) lenis.start();
+        document.body.style.overflow = '';
+      }
+
+      if (qvCloseBtn) qvCloseBtn.addEventListener('click', closeQuickView);
+      if (qvCloseBtnDesktop) qvCloseBtnDesktop.addEventListener('click', closeQuickView);
+      if (qvBackdrop) qvBackdrop.addEventListener('click', closeQuickView);
+
+      if (qvAddBtn) {
+        qvAddBtn.addEventListener('click', () => {
+          if (currentQvProduct) {
+            addToCart(currentQvProduct, currentQvColor);
+            closeQuickView();
+          }
+        });
+      }
+
+      // -----------------------------------------------------------
+      // 7. LIVE SEARCH OVERLAY MODAL
+      // -----------------------------------------------------------
+      const searchBackdrop = document.getElementById('search-backdrop');
+      const searchModal = document.getElementById('search-modal');
+      const searchToggleBtn = document.getElementById('search-toggle-btn');
+      const searchCloseBtn = document.getElementById('search-close-btn');
+      const searchInput = document.getElementById('search-input');
+      const searchResultsContainer = document.getElementById('search-results-container');
+
+      function openSearch() {
+        if (!searchModal || !searchBackdrop) return;
+        searchBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+        searchModal.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
+        if (lenis) lenis.stop();
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => searchInput?.focus(), 100);
+      }
+
+      function closeSearch() {
+        if (!searchModal || !searchBackdrop) return;
+        searchBackdrop.classList.add('opacity-0', 'pointer-events-none');
+        searchModal.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
+        if (searchInput) searchInput.value = '';
+        if (searchResultsContainer) {
+          searchResultsContainer.innerHTML = '<p class="text-xs font-mono text-brand-muted text-center py-6">Type to search across Kestrel curated series...</p>';
+        }
+        if (lenis) lenis.start();
+        document.body.style.overflow = '';
+      }
+
+      if (searchToggleBtn) searchToggleBtn.addEventListener('click', openSearch);
+      if (searchCloseBtn) searchCloseBtn.addEventListener('click', closeSearch);
+      if (searchBackdrop) searchBackdrop.addEventListener('click', closeSearch);
+
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          const query = searchInput.value.trim().toLowerCase();
+          if (!query) {
+            searchResultsContainer.innerHTML = '<p class="text-xs font-mono text-brand-muted text-center py-6">Type to search across Kestrel curated series...</p>';
+            return;
+          }
+
+          const matched = PRODUCTS_DATA.filter(p => 
+            p.name.toLowerCase().includes(query) ||
+            p.category.toLowerCase().includes(query) ||
+            p.description.toLowerCase().includes(query)
+          );
+
+          if (matched.length === 0) {
+            searchResultsContainer.innerHTML = `<p class="text-xs font-mono text-brand-muted text-center py-6">No matching objects found for "${query}".</p>`;
+          } else {
+            searchResultsContainer.innerHTML = matched.map(p => `
+              <div class="py-3.5 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <img src="${p.image}" alt="${p.name}" class="w-12 h-14 object-cover rounded-xs border border-brand-border" />
+                  <div>
+                    <h4 class="font-heading font-medium text-sm text-brand-dark">${p.name}</h4>
+                    <span class="font-mono text-xs text-brand-muted">${p.category} — $${p.price}</span>
+                  </div>
+                </div>
+                <button 
+                  type="button" 
+                  class="search-add-btn px-3 py-1.5 bg-brand-surface hover:bg-brand-dark text-brand-dark hover:text-white border border-brand-border rounded-xs font-mono text-xs uppercase"
+                  data-id="${p.id}"
+                >
+                  Add
+                </button>
+              </div>
+            `).join('');
+
+            searchResultsContainer.querySelectorAll('.search-add-btn').forEach(btn => {
+              btn.addEventListener('click', () => {
+                const prodId = btn.getAttribute('data-id');
+                const product = PRODUCTS_DATA.find(p => p.id === prodId);
+                if (product) {
+                  addToCart(product, product.colors[0].name);
+                  closeSearch();
+                }
+              });
+            });
+          }
+        });
+      }
+
+      // -----------------------------------------------------------
+      // 8. CHECKOUT & ORDER CONFIRMATION
+      // -----------------------------------------------------------
+      const checkoutBackdrop = document.getElementById('checkout-backdrop');
+      const checkoutModal = document.getElementById('checkout-modal');
+      const checkoutCloseBtn = document.getElementById('checkout-close-btn');
+      const checkoutForm = document.getElementById('checkout-form');
+      const checkoutError = document.getElementById('checkout-error');
+
+      const confBackdrop = document.getElementById('confirmation-backdrop');
+      const confModal = document.getElementById('confirmation-modal');
+      const confContinueBtn = document.getElementById('conf-continue-btn');
+
+      function openCheckout() {
+        if (cart.length === 0) {
+          showToast("Please add items to your satchel before checkout.");
+          return;
+        }
+        closeCartDrawer();
+
+        const count = getCartTotalCount();
+        const subtotal = getCartSubtotal();
+        const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 15;
+        const grandTotal = subtotal + shipping;
+
+        document.getElementById('checkout-items-count').textContent = `${count} ${count === 1 ? 'item' : 'items'}`;
+        document.getElementById('checkout-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+        document.getElementById('checkout-shipping').textContent = shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`;
+        document.getElementById('checkout-grand-total').textContent = `$${grandTotal.toFixed(2)}`;
+
+        checkoutBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+        checkoutModal.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+        if (lenis) lenis.stop();
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeCheckout() {
+        checkoutBackdrop.classList.add('opacity-0', 'pointer-events-none');
+        checkoutModal.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        if (checkoutError) checkoutError.classList.add('hidden');
+        if (lenis) lenis.start();
+        document.body.style.overflow = '';
+      }
+
+      if (checkoutBtn) checkoutBtn.addEventListener('click', openCheckout);
+      if (checkoutCloseBtn) checkoutCloseBtn.addEventListener('click', closeCheckout);
+      if (checkoutBackdrop) checkoutBackdrop.addEventListener('click', closeCheckout);
+
+      if (checkoutForm) {
+        checkoutForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('co-name').value.trim();
+          const email = document.getElementById('co-email').value.trim();
+          const address = document.getElementById('co-address').value.trim();
+          const city = document.getElementById('co-city').value.trim();
+          const postal = document.getElementById('co-postal').value.trim();
+
+          if (!name || !email || !address || !city || !postal) {
+            checkoutError.textContent = "Please fill in all shipping details.";
+            checkoutError.classList.remove('hidden');
+            return;
+          }
+
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            checkoutError.textContent = "Please provide a valid delivery email address.";
+            checkoutError.classList.remove('hidden');
+            return;
+          }
+
+          // Generate Order Number
+          const orderNum = `#KST-${Math.floor(10000 + Math.random() * 90000)}`;
+
+          // Clear cart
+          cart.length = 0;
+          updateCartUI();
+          checkoutForm.reset();
+          closeCheckout();
+
+          // Open Confirmation
+          document.getElementById('conf-order-num').textContent = orderNum;
+          document.getElementById('conf-recipient').textContent = `${name} (${city})`;
+
+          confBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+          confModal.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+          if (lenis) lenis.stop();
+          document.body.style.overflow = 'hidden';
+        });
+      }
+
+      function closeConfirmation() {
+        confBackdrop.classList.add('opacity-0', 'pointer-events-none');
+        confModal.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        if (lenis) {
+          lenis.start();
+          lenis.scrollTo('#featured-products', { offset: -80, duration: 1.2 });
+        } else {
+          document.body.style.overflow = '';
+          document.querySelector('#featured-products')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
+      if (confContinueBtn) confContinueBtn.addEventListener('click', closeConfirmation);
+      if (confBackdrop) confBackdrop.addEventListener('click', closeConfirmation);
+
+      // Global Escape Key to close open modals
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeCartDrawer();
+          closeQuickView();
+          closeSearch();
+          closeCheckout();
+          closeConfirmation();
+        }
+      });
+
+      // -----------------------------------------------------------
+      // 9. DYNAMIC PERSPECTIVES STACKED CARDS RENDERING
+      // -----------------------------------------------------------
+      function renderPerspectiveCards() {
+        const stackEl = document.getElementById('stack');
+        if (!stackEl) return;
+
+        const isDesktop = window.innerWidth >= 768;
+
+        const html = PERSPECTIVES_DATA.map((card, idx) => {
+          const topOffset = isDesktop ? card.topOffsetDesktop : card.topOffsetMobile;
+          const principlesHtml = card.principles.map((p, pIdx) => `
+            <div class="principle-item flex items-start gap-3.5 pt-3.5 ${pIdx > 0 ? 'border-t border-brand-border/60' : ''} opacity-20 translate-y-4">
+              <span class="font-mono text-xs font-semibold text-brand-accent tracking-wider pt-0.5 shrink-0">
+                ${p.num}
+              </span>
+              <div>
+                <h4 class="font-heading font-medium text-sm sm:text-base text-brand-dark tracking-tight">
+                  ${p.title}
+                </h4>
+                <p class="font-body text-xs sm:text-sm text-brand-muted font-light mt-0.5 leading-normal">
+                  ${p.desc}
+                </p>
+              </div>
+            </div>
+          `).join('');
+
+          return `
+            <article 
+              id="${card.id}" 
+              class="stacked-perspective-card relative bg-[#FAF9F9] border border-brand-border rounded-[8px] overflow-hidden"
+              style="position: sticky; top: ${topOffset}px; z-index: ${card.zIndex}; margin-bottom: 6vh; transform-origin: 50% 0; backface-visibility: hidden; will-change: transform; box-shadow: 0 -6px 28px rgba(7, 36, 39, 0.06), 0 12px 36px rgba(7, 36, 39, 0.04);"
+              data-index="${idx}"
+              data-num="${card.num}"
+            >
+              <!-- Deep Teal Shade Overlay (up to 30% opacity on approach of next card) -->
+              <div 
+                class="card-shade-overlay absolute inset-0 bg-[#072427] opacity-0 pointer-events-none transition-opacity duration-150 z-30 rounded-[8px]"
+                aria-hidden="true"
+              ></div>
+
+              <!-- Card Content Grid -->
+              <div class="relative z-10 flex flex-col md:flex-row h-full min-h-[480px]">
+                
+                <!-- Left Column: Content & Principles -->
+                <div class="p-6 sm:p-10 md:p-12 lg:p-14 md:w-1/2 flex flex-col justify-between">
+                  <div>
+                    <!-- Label with Expanding Accent Line -->
+                    <div class="flex items-center gap-3 mb-3.5">
+                      <span class="font-mono text-xs uppercase tracking-[0.25em] text-brand-accent font-semibold">
+                        ${card.label}
+                      </span>
+                      <span 
+                        class="card-accent-line inline-block h-[1px] bg-brand-accent origin-left w-16 sm:w-24 scale-x-0"
+                        aria-hidden="true"
+                      ></span>
+                    </div>
+
+                    <!-- Two-Line Heading (Masked Rise) -->
+                    <div class="mb-4 space-y-1">
+                      <div class="overflow-hidden">
+                        <h2 class="card-heading-line font-heading text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-brand-dark leading-[1.12] translate-y-[110%]">
+                          ${card.headingLine1}
+                        </h2>
+                      </div>
+                      <div class="overflow-hidden">
+                        <h2 class="card-heading-line font-heading text-3xl sm:text-4xl lg:text-5xl font-light italic tracking-tight text-brand-dark/90 leading-[1.12] translate-y-[110%]">
+                          ${card.headingLine2}
+                        </h2>
+                      </div>
+                    </div>
+
+                    <!-- Paragraph (2 to 3 lines) -->
+                    <p class="font-body text-xs sm:text-sm text-brand-muted font-light leading-relaxed mb-5 max-w-lg">
+                      ${card.summary}
+                    </p>
+
+                    <!-- Principles List Separated by 1px Borders -->
+                    <div class="principles-container space-y-1 pt-2 border-t border-brand-border/70">
+                      ${principlesHtml}
+                    </div>
+                  </div>
+
+                  <!-- Footer Row: Counter & Link -->
+                  <div class="mt-6 pt-3.5 border-t border-brand-border/60 flex items-center justify-between font-mono text-xs">
+                    <span class="text-brand-muted">PERSPECTIVE ${card.num} / 03</span>
+                    <a href="#featured-products" class="text-brand-accent hover:underline flex items-center gap-1 font-medium group">
+                      <span>Explore Objects</span>
+                      <span class="material-symbols-outlined text-14 group-hover:translate-x-0.5 transition-transform duration-150">arrow_forward</span>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Right Column: 4:3 Image Container with Clip-Path Reveal -->
+                <div class="p-6 sm:p-10 md:p-12 lg:p-14 md:w-1/2 flex flex-col justify-center bg-brand-surface/30 border-t md:border-t-0 md:border-l border-brand-border/60">
+                  <div class="relative w-full">
+                    <!-- Clip-Path applied strictly to this frame, NEVER to the card -->
+                    <div 
+                      class="card-img-frame relative aspect-[4/3] w-full rounded-[6px] overflow-hidden bg-brand-surfaceAlt border border-brand-border/80 shadow-sm"
+                      style="clip-path: inset(0 0 100% 0);"
+                    >
+                      <img 
+                        src="${card.image}" 
+                        alt="${card.imageAlt}" 
+                        class="card-parallax-img absolute inset-0 w-full h-[120%] -top-[10%] object-cover object-center will-change-transform scale-[1.18]"
+                        loading="lazy"
+                      />
+                    </div>
+
+                    <!-- Mono Caption -->
+                    <div class="mt-3 flex items-center justify-between font-mono text-[11px] text-brand-muted tracking-wide">
+                      <span>${card.caption}</span>
+                      <span class="text-brand-dark/40 font-normal">KESTREL STUDIO</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        stackEl.innerHTML = html;
+      }
+
+      renderPerspectiveCards();
+
+      // -----------------------------------------------------------
+      // 10. SMOOTH SCROLL ANCHOR NAVIGATION & NEWSLETTER
+      // -----------------------------------------------------------
+      document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+          const href = link.getAttribute('href');
+          if (!href || href === '#') return;
+          const target = document.querySelector(href);
+          if (!target) return;
+
+          e.preventDefault();
+          const mobileMenu = document.getElementById('mobile-nav-menu');
+          if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+          }
+
+          if (lenis) {
+            lenis.scrollTo(target, { offset: -80, duration: 1.2 });
+          } else {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+
+      // Mobile Menu Toggle
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      const mobileNavMenu = document.getElementById('mobile-nav-menu');
+      if (mobileMenuBtn && mobileNavMenu) {
+        mobileMenuBtn.addEventListener('click', () => {
+          mobileNavMenu.classList.toggle('hidden');
+        });
+      }
+
+      // Hero Explore Button
+      const heroExploreBtn = document.getElementById('hero-explore-btn');
+      if (heroExploreBtn) {
+        heroExploreBtn.addEventListener('click', () => {
+          if (lenis) {
+            lenis.scrollTo('#featured-products', { offset: -80, duration: 1.2 });
+          } else {
+            document.querySelector('#featured-products')?.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
+
+      // Back to top
+      const backToTopBtn = document.getElementById('back-to-top-btn');
+      if (backToTopBtn) {
+        backToTopBtn.addEventListener('click', () => {
+          if (lenis) {
+            lenis.scrollTo(0, { duration: 1.4 });
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+      }
+
+      // Newsletter Form
+      const newsletterForm = document.getElementById('newsletter-form');
+      const newsletterInput = document.getElementById('newsletter-email');
+      const newsletterMsg = document.getElementById('newsletter-msg');
+      if (newsletterForm && newsletterInput && newsletterMsg) {
+        newsletterForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const val = newsletterInput.value.trim();
+          const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!regex.test(val)) {
+            newsletterMsg.textContent = "Please enter a valid dispatch email address.";
+            newsletterMsg.classList.remove('hidden');
+            newsletterInput.focus();
+            return;
+          }
+
+          newsletterForm.innerHTML = '<p class="text-xs font-mono text-brand-dark pt-1">Thank you for joining our quiet dispatches. You are subscribed to Issue 04.</p>';
+        });
+      }
+
+      // -----------------------------------------------------------
+      // 11. GSAP SCROLL ANIMATIONS
+      // -----------------------------------------------------------
+      if (prefersReducedMotion) {
+        gsap.set('.hero-line', { y: 0, opacity: 1 });
+        gsap.set('.hero-fade-in', { y: 0, opacity: 1 });
+        gsap.set('.card-heading-line', { y: 0, opacity: 1 });
+        gsap.set('.card-accent-line', { scaleX: 1 });
+        gsap.set('.principle-item', { opacity: 1, y: 0 });
+        gsap.set('.card-img-frame', { clipPath: 'none' });
+        gsap.set('.card-parallax-img', { yPercent: 0 });
+        updateCartUI();
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Hero Entry Animation
+      const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      heroTl
+        .fromTo('.hero-line', 
+          { y: '100%', opacity: 0 }, 
+          { y: '0%', opacity: 1, duration: 1.1, stagger: 0.15, delay: 0.1 }
+        )
+        .to('.hero-fade-in', 
+          { y: 0, opacity: 1, duration: 0.9, stagger: 0.12 }, 
+          '-=0.6'
+        );
+
+      // Hero Background Parallax
+      gsap.to('#hero-bg-img', {
+        yPercent: 18,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        }
+      });
+
+      // Stacked Cards Animations
+      const cardElements = gsap.utils.toArray('.stacked-perspective-card');
+      const counterLabel = document.getElementById('counter-label');
+      const counterCurrent = document.getElementById('counter-current');
+      const counterFill = document.getElementById('counter-progress-fill');
+      const sideCounter = document.getElementById('fixed-side-counter');
+
+      function updateSideCounter(idx) {
+        const num = String(idx + 1).padStart(2, '0');
+        if (counterLabel) counterLabel.textContent = `PERSPECTIVE ${num}`;
+        if (counterCurrent) counterCurrent.textContent = num;
+        if (counterFill) {
+          const ratio = (idx + 1) / PERSPECTIVES_DATA.length;
+          counterFill.style.transform = `scaleY(${ratio})`;
+        }
+      }
+
+      if (sideCounter) {
+        ScrollTrigger.create({
+          trigger: '#stack',
+          start: 'top 80%',
+          end: 'bottom 20%',
+          onToggle: (self) => {
+            sideCounter.style.opacity = self.isActive ? '1' : '0';
+          }
+        });
+      }
+
+      // Card-level triggers
+      cardElements.forEach((card, idx) => {
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top 55%',
+          end: 'bottom 55%',
+          onToggle: (self) => {
+            if (self.isActive) updateSideCounter(idx);
+          }
+        });
+
+        const headingLines = card.querySelectorAll('.card-heading-line');
+        gsap.to(headingLines, {
+          y: '0%',
+          duration: 1.1,
+          ease: 'power3.out',
+          stagger: 0.12,
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 75%',
+            toggleActions: 'play none none reverse',
+          }
+        });
+
+        const accentLine = card.querySelector('.card-accent-line');
+        if (accentLine) {
+          gsap.to(accentLine, {
+            scaleX: 1,
+            duration: 0.9,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 78%',
+              toggleActions: 'play none none reverse',
+            }
+          });
+        }
+
+        const principles = card.querySelectorAll('.principle-item');
+        if (principles.length > 0) {
+          const principlesTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 65%',
+              end: 'top 25%',
+              scrub: 1.2,
+            }
+          });
+
+          principles.forEach((p, pIdx) => {
+            principlesTl.to(p, {
+              opacity: 1,
+              y: 0,
+              duration: 1.1,
+              ease: 'power2.out',
+            }, pIdx * 0.4);
+          });
+        }
+
+        const imgFrame = card.querySelector('.card-img-frame');
+        if (imgFrame) {
+          gsap.to(imgFrame, {
+            clipPath: 'inset(0 0 0% 0)',
+            duration: 1.35,
+            ease: 'power3.inOut',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 72%',
+              toggleActions: 'play none none reverse',
+            }
+          });
+        }
+
+        const parallaxImg = card.querySelector('.card-parallax-img');
+        if (parallaxImg) {
+          gsap.fromTo(parallaxImg,
+            { yPercent: -8 },
+            {
+              yPercent: 8,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: card,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true,
+              }
+            }
+          );
+        }
+      });
+
+      // Card-on-card Stacking Transition
+      const card01 = document.getElementById('card-01');
+      const card02 = document.getElementById('card-02');
+      const card03 = document.getElementById('card-03');
+
+      if (card01 && card02) {
+        const overlay01 = card01.querySelector('.card-shade-overlay');
+        gsap.to(card01, {
+          scale: 0.92,
+          rotateX: 3,
+          transformPerspective: 1200,
+          y: -14,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: card02,
+            start: 'top 75%',
+            end: 'top 35%',
+            scrub: true,
+          }
+        });
+
+        if (overlay01) {
+          gsap.to(overlay01, {
+            opacity: 0.30,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: card02,
+              start: 'top 75%',
+              end: 'top 35%',
+              scrub: true,
+            }
+          });
+        }
+      }
+
+      if (card02 && card03) {
+        const overlay02 = card02.querySelector('.card-shade-overlay');
+        gsap.to(card02, {
+          scale: 0.92,
+          rotateX: 3,
+          transformPerspective: 1200,
+          y: -14,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: card03,
+            start: 'top 75%',
+            end: 'top 45%',
+            scrub: true,
+          }
+        });
+
+        if (overlay02) {
+          gsap.to(overlay02, {
+            opacity: 0.30,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: card03,
+              start: 'top 75%',
+              end: 'top 45%',
+              scrub: true,
+            }
+          });
+        }
+
+        if (card01) {
+          gsap.to(card01, {
+            scale: 0.91, // 0.01 smaller per card
+            y: -24,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: card03,
+              start: 'top 75%',
+              end: 'top 45%',
+              scrub: true,
+            }
+          });
+        }
+      }
+
+      // Initial Cart UI Update
+      updateCartUI();
+
+      // Recalculate ScrollTrigger on image loads
+      window.addEventListener('load', () => {
+        ScrollTrigger.refresh();
+      });
+
+      // -----------------------------------------------------------
+      // 12. 2D WATER RIPPLE BACKGROUND SIMULATION
+      // -----------------------------------------------------------
+      (function initWaterRipples() {
+        const CELL_SIZE = 6;
+        const DAMP = 0.982;
+        const MOVE_STRENGTH = 1.2;
+        const CLICK_STRENGTH = 4.8;
+        const AMBIENT_STRENGTH = 1.8;
+        const CREST_MAX_ALPHA = 46;
+        const TROUGH_MAX_ALPHA = 22;
+
+        const canvas = document.getElementById('water-ripple-canvas');
+        if (!canvas) return;
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          canvas.style.display = 'none';
+          return;
+        }
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let cols = 0;
+        let rows = 0;
+        let buffer1 = null;
+        let buffer2 = null;
+        let imageData = null;
+
+        let lastPointerX = 0;
+        let lastPointerY = 0;
+        let lastPointerTime = performance.now();
+        let hasPointer = false;
+        let lastAmbientTime = performance.now();
+        let animId = 0;
+
+        function resizeGrid() {
+          if (!canvas || !ctx) return;
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+          cols = Math.ceil(w / CELL_SIZE);
+          rows = Math.ceil(h / CELL_SIZE);
+          const size = cols * rows;
+
+          buffer1 = new Float32Array(size);
+          buffer2 = new Float32Array(size);
+
+          canvas.width = cols;
+          canvas.height = rows;
+          imageData = ctx.createImageData(cols, rows);
+        }
+
+        resizeGrid();
+
+        let resizeTimer = null;
+        window.addEventListener('resize', () => {
+          if (resizeTimer) clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(resizeGrid, 120);
+        });
+
+        function disturb(cx, cy, strength, radiusPx) {
+          if (!buffer1) return;
+          const gx = Math.floor(cx / CELL_SIZE);
+          const gy = Math.floor(cy / CELL_SIZE);
+          const r = Math.max(1, Math.round(radiusPx / CELL_SIZE));
+          const rSq = r * r;
+
+          const minX = Math.max(1, gx - r);
+          const maxX = Math.min(cols - 2, gx + r);
+          const minY = Math.max(1, gy - r);
+          const maxY = Math.min(rows - 2, gy + r);
+
+          for (let y = minY; y <= maxY; y++) {
+            const dy = y - gy;
+            const dySq = dy * dy;
+            const rowOffset = y * cols;
+
+            for (let x = minX; x <= maxX; x++) {
+              const dx = x - gx;
+              const dSq = dx * dx + dySq;
+              if (dSq <= rSq) {
+                const dist = Math.sqrt(dSq);
+                const factor = Math.cos((dist / r) * (Math.PI / 2));
+                const idx = rowOffset + x;
+                buffer1[idx] = Math.max(-50, Math.min(50, buffer1[idx] + strength * factor));
+              }
+            }
+          }
+        }
+
+        // Pointer listeners with interactive control suppression
+        window.addEventListener('pointermove', (e) => {
+          if (e.target && e.target.closest && e.target.closest('button, .product-card-wrap, .stacked-perspective-card, #cart-panel, #search-modal, #quick-view-modal, #checkout-modal, #confirmation-modal, a, input, select, textarea')) {
+            hasPointer = false;
+            return;
+          }
+
+          const now = performance.now();
+          const dt = Math.max(1, now - lastPointerTime);
+          const currX = e.clientX;
+          const currY = e.clientY;
+
+          if (hasPointer) {
+            const dist = Math.hypot(currX - lastPointerX, currY - lastPointerY);
+            const speed = dist / dt;
+            const strength = Math.min(MOVE_STRENGTH * 2.8, MOVE_STRENGTH + speed * 1.2);
+            const radius = Math.min(20, Math.max(8, 9 + speed * 2.2));
+
+            const steps = Math.min(6, Math.max(1, Math.floor(dist / (CELL_SIZE * 1.5))));
+            for (let s = 1; s <= steps; s++) {
+              const t = s / steps;
+              const ix = lastPointerX + (currX - lastPointerX) * t;
+              const iy = lastPointerY + (currY - lastPointerY) * t;
+              disturb(ix, iy, strength, radius);
+            }
+          } else {
+            hasPointer = true;
+            disturb(currX, currY, MOVE_STRENGTH, 10);
+          }
+
+          lastPointerX = currX;
+          lastPointerY = currY;
+          lastPointerTime = now;
+        }, { passive: true });
+
+        window.addEventListener('pointerdown', (e) => {
+          if (e.target && e.target.closest && e.target.closest('button, .product-card-wrap, .stacked-perspective-card, #cart-panel, #search-modal, #quick-view-modal, #checkout-modal, #confirmation-modal, a, input, select, textarea')) {
+            return;
+          }
+
+          disturb(e.clientX, e.clientY, CLICK_STRENGTH, 20);
+          lastPointerX = e.clientX;
+          lastPointerY = e.clientY;
+          lastPointerTime = performance.now();
+          hasPointer = true;
+        }, { passive: true });
+
+        function tick(now) {
+          if (now - lastAmbientTime > 3000) {
+            const pad = 80;
+            const rx = Math.random() * (window.innerWidth - pad * 2) + pad;
+            const ry = Math.random() * (window.innerHeight - pad * 2) + pad;
+            const targetEl = document.elementFromPoint(rx, ry);
+            if (!targetEl || !targetEl.closest('button, .product-card-wrap, .stacked-perspective-card, #cart-panel, #search-modal, #quick-view-modal, a, input')) {
+              disturb(rx, ry, AMBIENT_STRENGTH, 14);
+            }
+            lastAmbientTime = now + (Math.random() * 600 - 300);
+          }
+
+          for (let y = 1; y < rows - 1; y++) {
+            const rowOffset = y * cols;
+            for (let x = 1; x < cols - 1; x++) {
+              const i = rowOffset + x;
+              const left = buffer1[i - 1];
+              const right = buffer1[i + 1];
+              const up = buffer1[i - cols];
+              const down = buffer1[i + cols];
+              buffer2[i] = ((left + right + up + down) * 0.5 - buffer2[i]) * DAMP;
+            }
+          }
+
+          const temp = buffer1;
+          buffer1 = buffer2;
+          buffer2 = temp;
+
+          const data = imageData.data;
+          const heroEl = document.getElementById('hero');
+          const heroBottom = heroEl ? heroEl.getBoundingClientRect().bottom : 0;
+          const heroGridRow = Math.max(0, Math.floor(heroBottom / CELL_SIZE));
+
+          for (let y = 1; y < rows - 1; y++) {
+            const rowOffset = y * cols;
+            const isHero = y < heroGridRow;
+
+            for (let x = 1; x < cols - 1; x++) {
+              const i = rowOffset + x;
+              const p = i * 4;
+              const slope = (buffer1[i - 1] - buffer1[i + 1]) + (buffer1[i - cols] - buffer1[i + cols]);
+
+              if (slope > 0.02) {
+                if (isHero) {
+                  const alpha = Math.min(50, Math.floor(slope * 36));
+                  data[p] = 250;
+                  data[p + 1] = 252;
+                  data[p + 2] = 255;
+                  data[p + 3] = alpha;
+                } else {
+                  const alpha = Math.min(CREST_MAX_ALPHA, Math.floor(slope * 32));
+                  data[p] = 175;
+                  data[p + 1] = 204;
+                  data[p + 2] = 207;
+                  data[p + 3] = alpha;
+                }
+              } else if (slope < -0.02) {
+                const alpha = Math.min(isHero ? 30 : TROUGH_MAX_ALPHA, Math.floor(-slope * 18));
+                data[p] = 7;
+                data[p + 1] = 36;
+                data[p + 2] = 39;
+                data[p + 3] = alpha;
+              } else {
+                data[p + 3] = 0;
+              }
+            }
+          }
+
+          ctx.putImageData(imageData, 0, 0);
+          animId = requestAnimationFrame(tick);
+        }
+
+        animId = requestAnimationFrame(tick);
+      })();
+
+    })();
+  </script>
+</body>
+</html>

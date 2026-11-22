@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perspectives — Editorial Stacked Cards | Kestrel</title>
+  <meta name="description" content="Three stacked editorial perspective cards crafted with Lenis smooth scrolling and GSAP ScrollTrigger.">
+
+  <!-- Google Fonts: Red Hat Display (Headings), Commissioner (Body), Source Code Pro (Mono & Numbers) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@300;400;500;600&family=Red+Hat+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Material Symbols Outlined -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <!-- Lenis CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.18/dist/lenis.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#FAF9F9',
+              dark: '#072427',
+              accent: '#B85D43',
+              accentHover: '#9E4E37',
+              border: '#D8D6CE',
+              surface: '#F4F2EE',
+              surfaceAlt: '#EAE7E1',
+              muted: '#526668',
+            }
+          },
+          fontFamily: {
+            heading: ['"Red Hat Display"', 'sans-serif'],
+            body: ['"Commissioner"', 'sans-serif'],
+            mono: ['"Source Code Pro"', 'monospace'],
+          },
+          borderRadius: {
+            DEFAULT: '8px',
+            sm: '6px',
+            md: '8px',
+            lg: '8px',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* =========================================================================
+       CRITICAL STACKING RULES & NO OVERFLOW-HIDDEN ANCESTORS
+       Do not use overflow: hidden or overflow-x: hidden on body or any ancestor
+       of the cards. Use overflow-x: clip to prevent horizontal scrollbars while
+       guaranteeing position: sticky functions flawlessly.
+       ========================================================================= */
+    html {
+      background-color: #FAF9F9;
+      color: #072427;
+      font-family: 'Commissioner', sans-serif;
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background-color: #FAF9F9;
+      overflow-x: clip;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Standard Lenis CSS */
+    html.lenis, html.lenis body {
+      height: auto;
+    }
+    .lenis.lenis-smooth {
+      scroll-behavior: auto !important;
+    }
+    .lenis.lenis-smooth [data-lenis-prevent] {
+      overscroll-behavior: contain;
+    }
+    .lenis.lenis-stopped {
+      overflow: hidden;
+    }
+
+    /* Accessibility Focus States */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid #B85D43;
+      outline-offset: 3px;
+    }
+
+    /* Custom Editorial Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF9F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D8D6CE;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #B85D43;
+    }
+
+    /* Stacked Card Baseline Rules:
+       - transform-origin: 50% 0
+       - position: sticky
+       - Opaque background & upward soft shadow */
+    .stacked-card {
+      position: -webkit-sticky;
+      position: sticky;
+      transform-origin: 50% 0;
+      background-color: #FAF9F9;
+      border-radius: 8px;
+      margin-bottom: 18vh;
+      min-height: 560px;
+      box-shadow: 0 -6px 28px rgba(7, 36, 39, 0.06), 0 12px 36px rgba(7, 36, 39, 0.04);
+      will-change: transform;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+    }
+
+    /* Reduced Motion Fallback:
+       Turn off sticky, turn off all animations, and show the cards normally in order */
+    @media (prefers-reduced-motion: reduce) {
+      .stacked-card {
+        position: relative !important;
+        top: auto !important;
+        transform: none !important;
+        margin-bottom: 2.5rem !important;
+        box-shadow: 0 2px 12px rgba(7, 36, 39, 0.05) !important;
+      }
+      .card-teal-overlay {
+        display: none !important;
+      }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+
+  <!-- GSAP & Lenis CDNs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+</head>
+<body class="selection:bg-brand-accent selection:text-white">
+
+  <!-- ========================================================================= -->
+  <!-- 00. THIN ACCENT PROGRESS BAR (Fixed Top) -->
+  <!-- ========================================================================= -->
+  <div 
+    id="scroll-progress-bar" 
+    class="fixed top-0 left-0 h-[2.5px] bg-brand-accent z-50 origin-left scale-x-0 w-full pointer-events-none transition-transform duration-75"
+    aria-hidden="true"
+  ></div>
+
+  <!-- WATER RIPPLE CANVAS (Strictly behind all cards at z-index: -1) -->
+  <canvas 
+    id="water-ripple-canvas" 
+    class="fixed inset-0 w-full h-full pointer-events-none" 
+    style="position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1;" 
+    aria-hidden="true"
+  ></canvas>
+
+  <!-- ========================================================================= -->
+  <!-- 01. EDITORIAL HEADER & NAVIGATION -->
+  <!-- ========================================================================= -->
+  <header 
+    id="main-nav" 
+    class="sticky top-0 z-40 w-full bg-[#FAF9F9]/90 backdrop-blur-md border-b border-brand-border/70 transition-colors duration-200"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-4 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#page-intro" class="flex items-baseline gap-2.5 group">
+        <span class="font-heading font-bold text-2xl tracking-tighter text-brand-dark group-hover:text-brand-accent transition-colors">
+          KESTREL
+        </span>
+        <span class="font-mono text-[10px] text-brand-muted tracking-widest uppercase hidden sm:inline">
+          // Perspectives
+        </span>
+      </a>
+
+      <!-- Anchor Links (using lenis.scrollTo) -->
+      <nav class="hidden md:flex items-center gap-7 text-xs font-mono tracking-wider uppercase" aria-label="Perspective Chapters">
+        <a href="#card-01" class="nav-anchor text-brand-dark/70 hover:text-brand-accent transition-colors">
+          01 / Material
+        </a>
+        <a href="#card-02" class="nav-anchor text-brand-dark/70 hover:text-brand-accent transition-colors">
+          02 / Process
+        </a>
+        <a href="#card-03" class="nav-anchor text-brand-dark/70 hover:text-brand-accent transition-colors">
+          03 / Longevity
+        </a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3">
+        <button 
+          id="open-drawer-btn" 
+          type="button" 
+          class="px-3.5 py-2 bg-brand-surface hover:bg-brand-dark hover:text-white text-brand-dark border border-brand-border rounded-[8px] font-mono text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2 group"
+          aria-label="Open Studio Protocol drawer"
+        >
+          <span class="material-symbols-outlined text-16 text-brand-accent group-hover:text-white transition-colors">menu_book</span>
+          <span class="hidden sm:inline">Studio Protocol</span>
+        </button>
+
+        <a 
+          href="/" 
+          class="px-3 py-2 text-brand-muted hover:text-brand-dark border border-transparent hover:border-brand-border rounded-[8px] font-mono text-xs uppercase transition-colors"
+          title="Return to Main Storefront"
+        >
+          Storefront
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 02. FIXED VERTICAL COUNTER (Left Rail, Hidden on Mobile) -->
+  <!-- "PERSPECTIVE 02 / 03", updating via ScrollTrigger to match card in view -->
+  <!-- ========================================================================= -->
+  <aside 
+    id="fixed-side-counter" 
+    class="fixed left-6 top-1/2 -translate-y-1/2 z-30 hidden lg:flex flex-col items-center gap-4 select-none pointer-events-none transition-opacity duration-300"
+    aria-hidden="true"
+  >
+    <div class="font-mono text-[11px] font-semibold tracking-[0.25em] text-brand-accent uppercase [writing-mode:vertical-rl] rotate-180">
+      <span id="counter-label">PERSPECTIVE 01</span>
+    </div>
+
+    <!-- Thin vertical progress line -->
+    <div class="h-20 w-[1.5px] bg-brand-border/80 relative overflow-hidden">
+      <div 
+        id="counter-progress-fill" 
+        class="h-full w-full bg-brand-accent origin-top scale-y-[0.33] transition-transform duration-300"
+      ></div>
+    </div>
+
+    <!-- Active Count -->
+    <div class="font-mono text-xs font-semibold text-brand-dark tracking-wider">
+      <span id="counter-current">01</span><span class="text-brand-dark/40 font-normal"> / 03</span>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- 03. PAGE INTRO AT THE TOP -->
+  <!-- ========================================================================= -->
+  <section id="page-intro" class="pt-20 pb-16 sm:pt-28 sm:pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-brand-border/60">
+    <div class="max-w-3xl">
+      <div class="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.25em] text-brand-accent mb-4">
+        <span>[ EDITORIAL MONOGRAPH ]</span>
+        <span class="inline-block w-8 h-[1px] bg-brand-accent"></span>
+        <span>THREE STACKED CHAPTERS</span>
+      </div>
+      <h1 class="font-heading text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight text-brand-dark leading-[1.08] mb-6">
+        Perspectives.
+      </h1>
+      <p class="font-body text-base sm:text-xl text-brand-muted font-light leading-relaxed mb-8 max-w-2xl">
+        Three deliberate principles for living with enduring objects: material origin, disciplined workshop process, and the quiet patina of lifelong utility. As you scroll, each card settles into place and the next slides over it.
+      </p>
+
+      <div class="flex flex-wrap items-center gap-4">
+        <a 
+          href="#card-01" 
+          class="nav-anchor px-6 py-3 bg-brand-dark hover:bg-brand-accent text-white font-mono text-xs uppercase tracking-[0.15em] rounded-[8px] transition-colors flex items-center gap-2"
+        >
+          <span>Begin Scroll</span>
+          <span class="material-symbols-outlined text-16">arrow_downward</span>
+        </a>
+        <a 
+          href="#card-02" 
+          class="nav-anchor px-6 py-3 border border-brand-border hover:border-brand-dark text-brand-dark font-mono text-xs uppercase tracking-[0.15em] rounded-[8px] transition-colors"
+        >
+          Jump to 02 Process
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 04. STACKED CARDS CONTAINER (ALL 3 CARDS ARE DIRECT SIBLINGS INSIDE THIS) -->
+  <!-- Rule: padding-bottom: 40vh so the last card does not release too early. -->
+  <!-- Rule: NO overflow:hidden ancestors! -->
+  <!-- ========================================================================= -->
+  <main 
+    id="stack" 
+    class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24"
+    style="padding-bottom: 40vh;"
+  >
+    <!-- All 3 cards will be rendered dynamically here from the JavaScript data array -->
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- 05. EPILOGUE & FOOTER -->
+  <!-- ========================================================================= -->
+  <footer class="py-24 border-t border-brand-border/70 bg-brand-surface/50 text-center relative z-40">
+    <div class="max-w-4xl mx-auto px-4">
+      <span class="font-mono text-xs uppercase tracking-[0.25em] text-brand-accent block mb-4">
+        [ CONCLUSION // PERSPECTIVES ]
+      </span>
+      <blockquote class="font-heading text-2xl sm:text-3xl font-light text-brand-dark tracking-tight max-w-2xl mx-auto mb-8">
+        “An object is only half-made by the maker. The rest is finished by time and honest human use.”
+      </blockquote>
+      <div class="flex items-center justify-center gap-4 font-mono text-xs">
+        <button 
+          id="back-to-top-btn" 
+          type="button" 
+          class="px-5 py-2.5 bg-brand-dark text-white rounded-[8px] hover:bg-brand-accent transition-colors flex items-center gap-2"
+        >
+          <span>Return to Top</span>
+          <span class="material-symbols-outlined text-16">arrow_upward</span>
+        </button>
+      </div>
+      <p class="mt-8 text-[11px] font-mono text-brand-muted/70">
+        © 2026 Kestrel Studio Ltd. Stacked perspective deck driven by Lenis &amp; GSAP ScrollTrigger.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- 06. STUDIO PROTOCOL DRAWER MODAL (Calls lenis.stop() and lenis.start()) -->
+  <!-- ========================================================================= -->
+  <div 
+    id="drawer-backdrop" 
+    class="fixed inset-0 bg-[#072427]/40 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"
+    aria-hidden="true"
+  ></div>
+
+  <aside 
+    id="protocol-drawer" 
+    class="fixed top-0 right-0 h-full w-full max-w-md bg-[#FAF9F9] border-l border-brand-border z-50 translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="drawer-heading"
+  >
+    <div class="p-6 border-b border-brand-border flex items-center justify-between">
+      <span class="font-mono text-xs font-semibold text-brand-accent uppercase tracking-wider">
+        [ STUDIO PROTOCOL ]
+      </span>
+      <button 
+        id="close-drawer-btn" 
+        type="button" 
+        class="p-2 text-brand-dark hover:text-brand-accent rounded-[8px] transition-colors"
+        aria-label="Close protocol drawer"
+      >
+        <span class="material-symbols-outlined text-20">close</span>
+      </button>
+    </div>
+
+    <div class="p-6 overflow-y-auto space-y-6 font-body text-sm leading-relaxed text-brand-muted flex-1" data-lenis-prevent>
+      <div>
+        <h3 id="drawer-heading" class="font-heading font-medium text-xl text-brand-dark mb-2">
+          Lenis Smooth Scroll Lifecycle
+        </h3>
+        <p class="font-light">
+          When this protocol drawer opens, <code class="font-mono text-xs bg-brand-surface px-1.5 py-0.5 rounded text-brand-dark">lenis.stop()</code> is invoked immediately. Background smooth scroll events are stopped, locking the underlying cards in place. Dismissing this panel executes <code class="font-mono text-xs bg-brand-surface px-1.5 py-0.5 rounded text-brand-dark">lenis.start()</code>.
+        </p>
+      </div>
+
+      <div class="p-4 bg-brand-surface border border-brand-border/70 rounded-[8px] space-y-2">
+        <span class="font-mono text-[11px] uppercase tracking-wider text-brand-accent font-semibold block">
+          STACKING SPECIFICATION
+        </span>
+        <p class="font-light text-xs text-brand-dark">
+          All three cards reside as direct siblings in a single parent container with 40vh bottom padding, avoiding separate sections and preventing the "two parts" separation bug.
+        </p>
+      </div>
+
+      <div class="space-y-3 font-mono text-xs text-brand-dark">
+        <div class="flex justify-between py-1.5 border-b border-brand-border/50">
+          <span class="text-brand-muted">CARD 01 TOP OFFSET</span>
+          <span>88px</span>
+        </div>
+        <div class="flex justify-between py-1.5 border-b border-brand-border/50">
+          <span class="text-brand-muted">CARD 02 TOP OFFSET</span>
+          <span>120px</span>
+        </div>
+        <div class="flex justify-between py-1.5 border-b border-brand-border/50">
+          <span class="text-brand-muted">CARD 03 TOP OFFSET</span>
+          <span>152px</span>
+        </div>
+        <div class="flex justify-between py-1.5">
+          <span class="text-brand-muted">CARD SCALING RATIO</span>
+          <span>0.92 (-0.01 per card)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 border-t border-brand-border bg-brand-surface/40">
+      <button 
+        id="dismiss-drawer-btn" 
+        type="button" 
+        class="w-full py-3 bg-brand-dark hover:bg-brand-accent text-white font-mono text-xs uppercase tracking-[0.15em] rounded-[8px] transition-colors"
+      >
+        Resume Scroll
+      </button>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- 07. JAVASCRIPT: DATA ARRAY, RENDERING & ANIMATIONS -->
+  <!-- ========================================================================= -->
+  <script>
+    // =========================================================================
+    // PERSPECTIVES DATA ARRAY (All 3 cards rendered from this single array)
+    // =========================================================================
+    const PERSPECTIVES_DATA = [
+      {
+        id: "card-01",
+        num: "01",
+        label: "[ PERSPECTIVE 01 ]",
+        headingLine1: "Material &",
+        headingLine2: "Origin.",
+        summary: "Before the tool touches the timber or the clay enters the kiln, quality is decided by origin. We work exclusively with slow-growth American walnut, unrefined Japanese stoneware clays, and organic long-staple fibers that gain character through decades of human touch.",
+        principles: [
+          {
+            num: "01",
+            title: "Fell only what is mature.",
+            desc: "Timber harvested strictly from managed forests; air-dried for twenty-four months to nullify internal grain tension."
+          },
+          {
+            num: "02",
+            title: "Honor the natural grain.",
+            desc: "No synthetic veneers or opaque polyurethane. The heartwood's natural ring density dictates internal acoustic geometry."
+          },
+          {
+            num: "03",
+            title: "Trace every element home.",
+            desc: "Single-source provenance from Kyoto ateliers to Pacific Northwest timber stands, verified by hand."
+          }
+        ],
+        image: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=1200&q=80",
+        imageAlt: "Natural air-dried walnut timber logs showing concentric annual growth rings",
+        caption: "FIG. 01 / TIMBER PROVENANCE & GROWTH RINGS",
+        topOffsetDesktop: 88,
+        topOffsetMobile: 76,
+        zIndex: 1,
+      },
+      {
+        id: "card-02",
+        num: "02",
+        label: "[ PERSPECTIVE 02 ]",
+        headingLine1: "Process &",
+        headingLine2: "Discipline.",
+        summary: "We make things slowly, bound by exacting rules and deliberate repetition. In our workshops, perfection is neither an impulse nor a lucky accident—it is the quiet consequence of returning to the same plane, the same kiln reduction, and the same tolerance until nothing superfluous remains.",
+        principles: [
+          {
+            num: "01",
+            title: "Measure twice, mill once.",
+            desc: "The wood remembers the edge of the blade; we calibrate geometry to a hundredth of a millimeter before cutting."
+          },
+          {
+            num: "02",
+            title: "Repeat until it is right.",
+            desc: "Craft is not fleeting inspiration; it is the patient rhythm of muscle memory and calibrated kiln fire."
+          },
+          {
+            num: "03",
+            title: "Finish what is quiet.",
+            desc: "True luxury removes ornament until only proportion, balance, and tactile resonance remain."
+          }
+        ],
+        image: "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=1200&q=80",
+        imageAlt: "Precision Japanese wood plane shaving walnut wood with translucent paper-thin curls",
+        caption: "FIG. 02 / THE WORKBENCH & HAND PLANE",
+        topOffsetDesktop: 120,
+        topOffsetMobile: 96,
+        zIndex: 2,
+      },
+      {
+        id: "card-03",
+        num: "03",
+        label: "[ PERSPECTIVE 03 ]",
+        headingLine1: "Use &",
+        headingLine2: "Longevity.",
+        summary: "An object is only half-finished when it departs the maker's bench. The remainder of its form is completed by the oil of your fingertips, the gentle scuffs of daily ritual, and the patina of honest wear that makes an everyday artifact irreplaceable.",
+        principles: [
+          {
+            num: "01",
+            title: "Design for repairability.",
+            desc: "Dry-friction joinery and modular brass hardware ensure components can be disassembled and serviced across generations."
+          },
+          {
+            num: "02",
+            title: "Embrace the honest patina.",
+            desc: "Unsealed brass oxidizes and vegetable-tanned leather darkens, recording the tangible history of your home."
+          },
+          {
+            num: "03",
+            title: "Outlive the century.",
+            desc: "We reject engineered obsolescence. If an object cannot endure forty years of daily ritual, we will not build it."
+          }
+        ],
+        image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1200&q=80",
+        imageAlt: "Antique handloom and weathered selvedge textiles showing rich organic texture",
+        caption: "FIG. 03 / THE PATINA OF HONEST WEAR",
+        topOffsetDesktop: 152,
+        topOffsetMobile: 116,
+        zIndex: 3,
+      }
+    ];
+
+    // =========================================================================
+    // DYNAMIC CARD RENDERING (Inject direct siblings into parent container)
+    // =========================================================================
+    function renderPerspectiveCards() {
+      const container = document.getElementById('stack');
+      if (!container) return;
+
+      const html = PERSPECTIVES_DATA.map((card, idx) => {
+        const isDesktop = window.innerWidth >= 768;
+        const topOffset = isDesktop ? card.topOffsetDesktop : card.topOffsetMobile;
+
+        const principlesHtml = card.principles.map((p, pIdx) => `
+          <div class="principle-item flex items-start gap-3.5 pt-4 ${pIdx > 0 ? 'border-t border-brand-border/60' : ''} opacity-20 translate-y-5">
+            <span class="font-mono text-xs font-semibold text-brand-accent tracking-wider pt-0.5 shrink-0">
+              ${p.num}
+            </span>
+            <div>
+              <h4 class="font-heading font-medium text-sm sm:text-base text-brand-dark tracking-tight">
+                ${p.title}
+              </h4>
+              <p class="font-body text-xs sm:text-sm text-brand-muted font-light mt-0.5 leading-normal">
+                ${p.desc}
+              </p>
+            </div>
+          </div>
+        `).join('');
+
+        return `
+          <article 
+            id="${card.id}" 
+            class="stacked-card border border-brand-border"
+            style="top: ${topOffset}px; z-index: ${card.zIndex}; min-height: 560px;"
+            data-index="${idx}"
+            data-num="${card.num}"
+          >
+            <!-- Deep Teal Soft Overlay (for darkening as subsequent card slides over) -->
+            <div 
+              class="card-teal-overlay absolute inset-0 bg-[#072427] opacity-0 pointer-events-none transition-opacity duration-150 z-30 rounded-[8px]"
+              aria-hidden="true"
+            ></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row overflow-hidden rounded-[8px]">
+              
+              <!-- LEFT COLUMN: EDITORIAL TEXT & PRINCIPLES -->
+              <div class="p-6 sm:p-10 md:p-12 lg:p-14 md:w-1/2 flex flex-col justify-between">
+                <div>
+                  
+                  <!-- Mono Label with Expanding Accent Line -->
+                  <div class="flex items-center gap-3 mb-4">
+                    <span class="font-mono text-xs uppercase tracking-[0.25em] text-brand-accent font-semibold">
+                      ${card.label}
+                    </span>
+                    <span 
+                      class="card-accent-line inline-block h-[1px] bg-brand-accent origin-left w-16 sm:w-24 scale-x-0"
+                      aria-hidden="true"
+                    ></span>
+                  </div>
+
+                  <!-- Large Two-Line Heading (Masked Rise) -->
+                  <div class="mb-5 space-y-1">
+                    <div class="overflow-hidden">
+                      <h2 class="card-heading-line font-heading text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-brand-dark leading-[1.12] translate-y-[110%]">
+                        ${card.headingLine1}
+                      </h2>
+                    </div>
+                    <div class="overflow-hidden">
+                      <h2 class="card-heading-line font-heading text-3xl sm:text-4xl lg:text-5xl font-light italic tracking-tight text-brand-dark/90 leading-[1.12] translate-y-[110%]">
+                        ${card.headingLine2}
+                      </h2>
+                    </div>
+                  </div>
+
+                  <!-- Short Paragraph (2 to 3 lines) -->
+                  <p class="font-body text-sm sm:text-base text-brand-muted font-light leading-relaxed mb-6 max-w-lg">
+                    ${card.summary}
+                  </p>
+
+                  <!-- Numbered Principles Separated by 1px Borders -->
+                  <div class="principles-container space-y-1 pt-2 border-t border-brand-border/70">
+                    ${principlesHtml}
+                  </div>
+
+                </div>
+
+                <!-- Card Bottom Rail -->
+                <div class="mt-8 pt-4 border-t border-brand-border/60 flex items-center justify-between font-mono text-xs text-brand-muted">
+                  <span>PERSPECTIVE CHAPTER ${card.num} / 03</span>
+                  <span class="text-brand-dark font-medium">${card.id.toUpperCase()}</span>
+                </div>
+              </div>
+
+              <!-- RIGHT COLUMN: 4:3 IMAGE WITH CLIP-PATH & PARALLAX -->
+              <div class="p-6 sm:p-10 md:p-12 lg:p-14 md:w-1/2 flex flex-col justify-center bg-brand-surface/30 border-t md:border-t-0 md:border-l border-brand-border/60">
+                <div class="relative w-full">
+                  
+                  <!-- 4:3 Aspect Ratio Container with Clip-Path Reveal -->
+                  <div 
+                    class="card-img-frame relative aspect-[4/3] w-full rounded-[6px] overflow-hidden bg-brand-surfaceAlt border border-brand-border/80 shadow-sm"
+                    style="clip-path: inset(0 0 100% 0);"
+                  >
+                    <!-- Image scaled to 1.18 for smooth interior parallax -->
+                    <img 
+                      src="${card.image}" 
+                      alt="${card.imageAlt}" 
+                      class="card-parallax-img absolute inset-0 w-full h-[120%] -top-[10%] object-cover object-center will-change-transform scale-[1.18]"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <!-- Small Mono Caption -->
+                  <div class="mt-3 flex items-center justify-between font-mono text-[11px] text-brand-muted tracking-wide">
+                    <span>${card.caption}</span>
+                    <span class="text-brand-dark/40 font-normal">KESTREL STUDIO</span>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      container.innerHTML = html;
+    }
+
+    // =========================================================================
+    // INITIALIZATION & ANIMATIONS LIFECYCLE
+    // =========================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Render all cards into the single parent container
+      renderPerspectiveCards();
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // 2. Initialize Lenis Smooth Scroll
+      let lenis = null;
+      if (!prefersReducedMotion && typeof Lenis !== 'undefined') {
+        lenis = new Lenis({
+          lerp: 0.08,
+          smoothWheel: true,
+          wheelMultiplier: 1.0,
+        });
+
+        // Connect Lenis to GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+
+        // Drive Lenis RAF from GSAP ticker with lagSmoothing(0)
+        gsap.ticker.add((time) => {
+          lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+      }
+
+      // 3. Scroll Progress Bar
+      window.addEventListener('scroll', () => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = h > 0 ? window.scrollY / h : 0;
+        const bar = document.getElementById('scroll-progress-bar');
+        if (bar) bar.style.transform = `scaleX(${progress})`;
+      }, { passive: true });
+
+      // 4. Anchor Links Navigation (lenis.scrollTo)
+      document.querySelectorAll('a[href^="#"], .nav-anchor').forEach((link) => {
+        link.addEventListener('click', (e) => {
+          const href = link.getAttribute('href');
+          if (!href || href === '#') return;
+          const target = document.querySelector(href);
+          if (!target) return;
+
+          e.preventDefault();
+          if (lenis) {
+            lenis.scrollTo(target, { offset: -80, duration: 1.2 });
+          } else {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+
+      // Back to top
+      const backToTopBtn = document.getElementById('back-to-top-btn');
+      if (backToTopBtn) {
+        backToTopBtn.addEventListener('click', () => {
+          if (lenis) {
+            lenis.scrollTo(0, { duration: 1.4 });
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+      }
+
+      // 5. Drawer Modal Control (Calls lenis.stop() and lenis.start())
+      const drawer = document.getElementById('protocol-drawer');
+      const backdrop = document.getElementById('drawer-backdrop');
+      const openBtn = document.getElementById('open-drawer-btn');
+      const closeBtn = document.getElementById('close-drawer-btn');
+      const dismissBtn = document.getElementById('dismiss-drawer-btn');
+
+      function openDrawer() {
+        if (!drawer || !backdrop) return;
+        drawer.classList.remove('translate-x-full');
+        backdrop.classList.remove('opacity-0', 'pointer-events-none');
+        if (lenis) lenis.stop();
+      }
+
+      function closeDrawer() {
+        if (!drawer || !backdrop) return;
+        drawer.classList.add('translate-x-full');
+        backdrop.classList.add('opacity-0', 'pointer-events-none');
+        if (lenis) lenis.start();
+      }
+
+      if (openBtn) openBtn.addEventListener('click', openDrawer);
+      if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+      if (dismissBtn) dismissBtn.addEventListener('click', closeDrawer);
+      if (backdrop) backdrop.addEventListener('click', closeDrawer);
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeDrawer();
+      });
+
+      // 6. Reduced Motion Check: Turn off animations and sticky if requested
+      if (prefersReducedMotion) {
+        gsap.set('.card-heading-line', { y: 0, opacity: 1 });
+        gsap.set('.card-accent-line', { scaleX: 1 });
+        gsap.set('.principle-item', { opacity: 1, y: 0 });
+        gsap.set('.card-img-frame', { clipPath: 'none' });
+        gsap.set('.card-parallax-img', { yPercent: 0 });
+        return;
+      }
+
+      // Register GSAP ScrollTrigger
+      gsap.registerPlugin(ScrollTrigger);
+
+      // 7. Side Counter Elements & State Tracking
+      const counterLabel = document.getElementById('counter-label');
+      const counterCurrent = document.getElementById('counter-current');
+      const counterFill = document.getElementById('counter-progress-fill');
+      const cardElements = gsap.utils.toArray('.stacked-card');
+
+      // Update side counter function
+      function updateSideCounter(idx) {
+        const num = String(idx + 1).padStart(2, '0');
+        if (counterLabel) counterLabel.textContent = `PERSPECTIVE ${num}`;
+        if (counterCurrent) counterCurrent.textContent = num;
+        if (counterFill) {
+          const ratio = (idx + 1) / PERSPECTIVES_DATA.length;
+          counterFill.style.transform = `scaleY(${ratio})`;
+        }
+      }
+
+      // 8. Individual Card In-View Animations
+      cardElements.forEach((card, idx) => {
+        // (A) Side Counter Toggle
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top 55%',
+          end: 'bottom 55%',
+          onToggle: (self) => {
+            if (self.isActive) updateSideCounter(idx);
+          }
+        });
+
+        // (B) Heading masked rise (yPercent 110 to 0)
+        const headingLines = card.querySelectorAll('.card-heading-line');
+        gsap.to(headingLines, {
+          y: '0%',
+          duration: 1.1,
+          ease: 'power3.out',
+          stagger: 0.12,
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 75%',
+            toggleActions: 'play none none reverse',
+          }
+        });
+
+        // (C) Accent line expansion (scaleX 0 to 1)
+        const accentLine = card.querySelector('.card-accent-line');
+        if (accentLine) {
+          gsap.to(accentLine, {
+            scaleX: 1,
+            duration: 0.9,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 78%',
+              toggleActions: 'play none none reverse',
+            }
+          });
+        }
+
+        // (D) Three principles fade in & slide up with scrub
+        const principles = card.querySelectorAll('.principle-item');
+        if (principles.length > 0) {
+          const principlesTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 65%',
+              end: 'top 25%',
+              scrub: 1.2,
+            }
+          });
+
+          principles.forEach((p, pIdx) => {
+            principlesTl.to(p, {
+              opacity: 1,
+              y: 0,
+              duration: 1.1,
+              ease: 'power2.out',
+            }, pIdx * 0.4);
+          });
+        }
+
+        // (E) Image Clip-Path reveal (inset(0 0 100% 0) to inset(0 0 0% 0))
+        const imgFrame = card.querySelector('.card-img-frame');
+        if (imgFrame) {
+          gsap.to(imgFrame, {
+            clipPath: 'inset(0 0 0% 0)',
+            duration: 1.35,
+            ease: 'power3.inOut',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 72%',
+              toggleActions: 'play none none reverse',
+            }
+          });
+        }
+
+        // (F) Image parallax inside frame (yPercent -8 to 8)
+        const parallaxImg = card.querySelector('.card-parallax-img');
+        if (parallaxImg) {
+          gsap.fromTo(parallaxImg,
+            { yPercent: -8 },
+            {
+              yPercent: 8,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: card,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true,
+              }
+            }
+          );
+        }
+      });
+
+      // 9. Stacking Transitions When Subsequent Cards Approach:
+      // "When the next card approaches, the current card scales down to about 0.92,
+      // tilts slightly (rotateX 3, transformPerspective 1200), moves up about 14px,
+      // and darkens with a teal overlay up to about 30% opacity.
+      // Make each earlier card scale a little smaller (0.01 less per card)."
+
+      // When Card 02 approaches Card 01:
+      const card01 = document.getElementById('card-01');
+      const card02 = document.getElementById('card-02');
+      const card03 = document.getElementById('card-03');
+
+      if (card01 && card02) {
+        const overlay01 = card01.querySelector('.card-teal-overlay');
+        
+        gsap.to(card01, {
+          scale: 0.92,
+          rotateX: 3,
+          transformPerspective: 1200,
+          y: -14,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: card02,
+            start: 'top 75%',
+            end: 'top 35%',
+            scrub: true,
+          }
+        });
+
+        if (overlay01) {
+          gsap.to(overlay01, {
+            opacity: 0.30,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: card02,
+              start: 'top 75%',
+              end: 'top 35%',
+              scrub: true,
+            }
+          });
+        }
+      }
+
+      // When Card 03 approaches Card 02:
+      if (card02 && card03) {
+        const overlay02 = card02.querySelector('.card-teal-overlay');
+
+        // Card 02 scales down to 0.92, tilts rotateX 3, moves up 14px, darkens up to 30%
+        gsap.to(card02, {
+          scale: 0.92,
+          rotateX: 3,
+          transformPerspective: 1200,
+          y: -14,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: card03,
+            start: 'top 75%',
+            end: 'top 45%',
+            scrub: true,
+          }
+        });
+
+        if (overlay02) {
+          gsap.to(overlay02, {
+            opacity: 0.30,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: card03,
+              start: 'top 75%',
+              end: 'top 45%',
+              scrub: true,
+            }
+          });
+        }
+
+        // Earlier card (Card 01) scales 0.01 smaller (0.91) as Card 03 approaches
+        if (card01) {
+          gsap.to(card01, {
+            scale: 0.91, // 0.01 less than 0.92
+            y: -24,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: card03,
+              start: 'top 75%',
+              end: 'top 45%',
+              scrub: true,
+            }
+          });
+        }
+      }
+
+      // Refresh ScrollTrigger calculations after initial paint & after images load
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 100);
+      window.addEventListener('load', () => {
+        ScrollTrigger.refresh();
+      });
+    });
+
+    // =========================================================================
+    // INTERACTIVE WATER RIPPLE SIMULATION (Strictly Behind Cards at z-index: -1)
+    // =========================================================================
+    (function initWaterRipples() {
+      const CELL_SIZE = 6;
+      const DAMP = 0.982;
+      const MOVE_STRENGTH = 1.2;
+      const CLICK_STRENGTH = 4.8;
+      const AMBIENT_STRENGTH = 1.8;
+      const CREST_MAX_ALPHA = 46;
+      const TROUGH_MAX_ALPHA = 22;
+
+      const canvas = document.getElementById('water-ripple-canvas');
+      if (!canvas) return;
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        canvas.style.display = 'none';
+        return;
+      }
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      let cols = 0;
+      let rows = 0;
+      let buffer1 = null;
+      let buffer2 = null;
+      let imageData = null;
+
+      let lastPointerX = 0;
+      let lastPointerY = 0;
+      let lastPointerTime = performance.now();
+      let hasPointer = false;
+      let lastAmbientTime = performance.now();
+      let animId = 0;
+
+      function resizeGrid() {
+        if (!canvas || !ctx) return;
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        cols = Math.ceil(w / CELL_SIZE);
+        rows = Math.ceil(h / CELL_SIZE);
+        const size = cols * rows;
+
+        buffer1 = new Float32Array(size);
+        buffer2 = new Float32Array(size);
+
+        canvas.width = cols;
+        canvas.height = rows;
+        imageData = ctx.createImageData(cols, rows);
+      }
+
+      resizeGrid();
+
+      let resizeTimer = null;
+      window.addEventListener('resize', () => {
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resizeGrid, 120);
+      });
+
+      function disturb(cx, cy, strength, radiusPx) {
+        if (!buffer1) return;
+        const gx = Math.floor(cx / CELL_SIZE);
+        const gy = Math.floor(cy / CELL_SIZE);
+        const r = Math.max(1, Math.round(radiusPx / CELL_SIZE));
+        const rSq = r * r;
+
+        const minX = Math.max(1, gx - r);
+        const maxX = Math.min(cols - 2, gx + r);
+        const minY = Math.max(1, gy - r);
+        const maxY = Math.min(rows - 2, gy + r);
+
+        for (let y = minY; y <= maxY; y++) {
+          const dy = y - gy;
+          const dySq = dy * dy;
+          const rowOffset = y * cols;
+
+          for (let x = minX; x <= maxX; x++) {
+            const dx = x - gx;
+            const dSq = dx * dx + dySq;
+            if (dSq <= rSq) {
+              const dist = Math.sqrt(dSq);
+              const factor = Math.cos((dist / r) * (Math.PI / 2));
+              const idx = rowOffset + x;
+              buffer1[idx] = Math.max(-50, Math.min(50, buffer1[idx] + strength * factor));
+            }
+          }
+        }
+      }
+
+      window.addEventListener('pointermove', (e) => {
+        if (e.target && e.target.closest && e.target.closest('button, .stacked-perspective-card, .stacked-card, a, input, select, textarea')) {
+          hasPointer = false;
+          return;
+        }
+
+        const now = performance.now();
+        const dt = Math.max(1, now - lastPointerTime);
+        const currX = e.clientX;
+        const currY = e.clientY;
+
+        if (hasPointer) {
+          const dist = Math.hypot(currX - lastPointerX, currY - lastPointerY);
+          const speed = dist / dt;
+          const strength = Math.min(MOVE_STRENGTH * 2.8, MOVE_STRENGTH + speed * 1.2);
+          const radius = Math.min(20, Math.max(8, 9 + speed * 2.2));
+
+          const steps = Math.min(6, Math.max(1, Math.floor(dist / (CELL_SIZE * 1.5))));
+          for (let s = 1; s <= steps; s++) {
+            const t = s / steps;
+            const ix = lastPointerX + (currX - lastPointerX) * t;
+            const iy = lastPointerY + (currY - lastPointerY) * t;
+            disturb(ix, iy, strength, radius);
+          }
+        } else {
+          hasPointer = true;
+          disturb(currX, currY, MOVE_STRENGTH, 10);
+        }
+
+        lastPointerX = currX;
+        lastPointerY = currY;
+        lastPointerTime = now;
+      }, { passive: true });
+
+      window.addEventListener('pointerdown', (e) => {
+        if (e.target && e.target.closest && e.target.closest('button, .stacked-perspective-card, .stacked-card, a, input, select, textarea')) {
+          return;
+        }
+
+        disturb(e.clientX, e.clientY, CLICK_STRENGTH, 20);
+        lastPointerX = e.clientX;
+        lastPointerY = e.clientY;
+        lastPointerTime = performance.now();
+        hasPointer = true;
+      }, { passive: true });
+
+      function tick(now) {
+        if (now - lastAmbientTime > 3000) {
+          const pad = 80;
+          const rx = Math.random() * (window.innerWidth - pad * 2) + pad;
+          const ry = Math.random() * (window.innerHeight - pad * 2) + pad;
+          const targetEl = document.elementFromPoint(rx, ry);
+          if (!targetEl || !targetEl.closest('button, .stacked-perspective-card, .stacked-card, a, input')) {
+            disturb(rx, ry, AMBIENT_STRENGTH, 14);
+          }
+          lastAmbientTime = now + (Math.random() * 600 - 300);
+        }
+
+        for (let y = 1; y < rows - 1; y++) {
+          const rowOffset = y * cols;
+          for (let x = 1; x < cols - 1; x++) {
+            const i = rowOffset + x;
+            const left = buffer1[i - 1];
+            const right = buffer1[i + 1];
+            const up = buffer1[i - cols];
+            const down = buffer1[i + cols];
+            buffer2[i] = ((left + right + up + down) * 0.5 - buffer2[i]) * DAMP;
+          }
+        }
+
+        const temp = buffer1;
+        buffer1 = buffer2;
+        buffer2 = temp;
+
+        const data = imageData.data;
+        for (let y = 1; y < rows - 1; y++) {
+          const rowOffset = y * cols;
+          for (let x = 1; x < cols - 1; x++) {
+            const i = rowOffset + x;
+            const p = i * 4;
+            const slope = (buffer1[i - 1] - buffer1[i + 1]) + (buffer1[i - cols] - buffer1[i + cols]);
+
+            if (slope > 0.02) {
+              const alpha = Math.min(CREST_MAX_ALPHA, Math.floor(slope * 32));
+              data[p] = 175;
+              data[p + 1] = 204;
+              data[p + 2] = 207;
+              data[p + 3] = alpha;
+            } else if (slope < -0.02) {
+              const alpha = Math.min(TROUGH_MAX_ALPHA, Math.floor(-slope * 16));
+              data[p] = 7;
+              data[p + 1] = 36;
+              data[p + 2] = 39;
+              data[p + 3] = alpha;
+            } else {
+              data[p + 3] = 0;
+            }
+          }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+        animId = requestAnimationFrame(tick);
+      }
+
+      animId = requestAnimationFrame(tick);
+    })();
+  </script>
+</body>
+</html>

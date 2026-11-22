@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Commissioner:wght@300;400;500;600&family=Red+Hat+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Source+Code+Pro:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #FAF9F9;
+  --primary: #072427;
+  --accent: #B85D43;
+  --font-heading: 'Red Hat Display', sans-serif;
+  --font-body: 'Commissioner', sans-serif;
+  --font-mono: 'Source Code Pro', monospace;
+}
+
+html {
+  background-color: #FAF9F9;
+}
+
+body {
+  background-color: transparent !important;
+  color: #072427;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Strict Placement for Water Canvas: Above hero image (z-index: 0), behind cards (z-index: 10) & buttons (z-index: 30) */
+#water-ripple-canvas {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+/* Card Protection: Solid opaque background & elevated stacking context (No water effect on cards) */
+.product-card-wrap,
+.product-card-inner,
+.story-card,
+.card-surface,
+.cart-item {
+  position: relative !important;
+  z-index: 10 !important;
+  isolation: isolate !important;
+}
+.product-card-inner {
+  background-color: #ffffff !important;
+}
+.card-surface {
+  background-color: #FAF9F9 !important;
+}
+
+/* Button & Control Protection: Elevated stacking context & solid surfaces (No water effect on buttons) */
+button,
+.quick-add-btn,
+.swatch-btn,
+.filter-pill,
+#hero-explore-btn,
+#cart-toggle-btn,
+#search-toggle-btn,
+#mobile-menu-btn,
+#back-to-top-btn,
+a.group,
+header#main-nav,
+nav,
+#cart-panel,
+#cart-drawer-root {
+  position: relative;
+  z-index: 30 !important;
+  isolation: isolate !important;
+}
+
+/* Hero Text & Foreground Content */
+#hero .relative.z-10 {
+  position: relative !important;
+  z-index: 25 !important;
+}
+
+/* Perspective Grid */
+.perspective-grid {
+  perspective: 1200px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF9F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #D8D6CE;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B85D43;
+}
+
+/* Accessibility Focus States */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #B85D43;
+  outline-offset: 2px;
+}
+
+/* Lenis CSS */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
